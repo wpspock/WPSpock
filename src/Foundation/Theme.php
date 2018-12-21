@@ -51,7 +51,7 @@ class Theme
         $this->themeUri  = get_template_directory_uri();
         $this->theme     = wp_get_theme();
 
-        logger("BOOOT",[$this->version]);
+        //logger("BOOOT",[$this->version]);
 
         $this->boot();
     }
@@ -307,5 +307,55 @@ class Theme
         if (defined('JETPACK__VERSION')) {
             require get_template_directory() . '/inc/jetpack.php';
         }
+    }
+
+    protected function resourceTemplates()
+    {
+        $arr = [
+            '404' => '/resources/views/errors/404.php',
+            'header' => '/resources/views/header/index.php',
+            'footer' => '/resources/views/footer/index.php',
+            'archive' => '/resources/views/main/archive.php',
+            'comments' => '/resources/views/main/comments.php',
+            'index' => '/resources/views/main/index.php',
+            'page' => '/resources/views/main/page.php',
+            'search' => '/resources/views/main/search.php',
+            'sidebar' => '/resources/views/main/sidebar.php',
+            'single' => '/resources/views/main/single.php',
+        ];
+
+        return apply_filters('spock_resource_templates', $arr);
+    }
+
+    public function resource($path)
+    {
+        $path = ltrim($path, '/');
+        require "{$this->themePath}/resources/{$path}";
+    }
+    public function view($path)
+    {
+        $path = ltrim($path, '/');
+        require "{$this->themePath}/resources/views/{$path}";
+    }
+
+    public function template($name)
+    {
+        $arr = $this->resourceTemplates();
+
+        if (isset($arr[$name])) {
+            require "{$this->themePath}{$arr[$name]}";
+        }
+    }
+
+    public function provider($key)
+    {
+        return $GLOBALS["spock_service_provider_{$key}"] ?? null;
+    }
+
+    public function theSlug()
+    {
+        global $post;
+
+        echo $post->post_name ?? "";
     }
 }
