@@ -1,0 +1,35 @@
+{
+  "name": "wpspock/wpspock",
+  "version": "0.1.0",
+  "homepage": "https://github.com/wpspock/wpspock",
+  "type": "library",
+  "description": "WordPress theme framework",
+  "keywords": [ "wordpress", "laravel", "framework", "wpbones", "plugins", "themes" ],
+  "license": "GPL-3.0",
+  "authors": [
+    {
+      "name": "Giovambattista Fazioli",
+      "email": "giovambattista.fazioli@gmail.com",
+      "homepage": "http://undolog.com"
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wpspock/wpspock"
+  },
+  "support": {
+    "issues": "https://github.com/wpspock/WPSpock/issues",
+    "source": "https://github.com/wpspock/WPSpock/"
+  },
+  "require": {
+    "php": ">=7.1.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "WPScotty\\WPSpock\\": "src/"
+    },
+    "files": [
+      "src/helpers.php"
+    ]
+  }
+}
