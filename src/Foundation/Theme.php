@@ -309,53 +309,58 @@ class Theme
         }
     }
 
-    protected function resourceTemplates()
+    /**
+     * Return the WP Spock vendor folder
+     *
+     * @return string
+     */
+    protected function vendor(): string
     {
-        $arr = [
-            '404' => '/resources/views/errors/404.php',
-            'header' => '/resources/views/header/index.php',
-            'footer' => '/resources/views/footer/index.php',
-            'archive' => '/resources/views/main/archive.php',
-            'comments' => '/resources/views/main/comments.php',
-            'index' => '/resources/views/main/index.php',
-            'page' => '/resources/views/main/page.php',
-            'search' => '/resources/views/main/search.php',
-            'sidebar' => '/resources/views/main/sidebar.php',
-            'single' => '/resources/views/main/single.php',
-        ];
-
-        return apply_filters('spock_resource_templates', $arr);
+        return '/vendor/wpspock/wpspock/src/';
     }
 
-    public function resource($path)
+    /**
+     * Load a theme resources.
+     *
+     * @param string $path Complete path/filename of resource.
+     */
+    public function resource(string $path)
     {
         $path = ltrim($path, '/');
-        require "{$this->themePath}/resources/{$path}";
+        include "{$this->themePath}/resources/{$path}";
     }
-    public function view($path)
+
+    /**
+     * Load a view from theme/resources/views
+     *
+     * @param string $path Path filename of view.
+     */
+    public function view(string $path)
     {
-        $path = ltrim($path, '/');
+        $path     = ltrim($path, '/');
         require "{$this->themePath}/resources/views/{$path}";
     }
 
-    public function template($name)
-    {
-        $arr = $this->resourceTemplates();
 
-        if (isset($arr[$name])) {
-            require "{$this->themePath}{$arr[$name]}";
-        }
+    /**
+     * Return an instance of a registered provider in the `config/theme.php`.
+     *
+     * @param string $key Provider key.
+     * @return mixed|null
+     */
+    public function provider(string $key)
+    {
+        return $GLOBALS["spock_service_provider_{$key}"]??null;
     }
 
-    public function provider($key)
-    {
-        return $GLOBALS["spock_service_provider_{$key}"] ?? null;
-    }
-
+    /**
+     * Helper
+     *
+     */
     public function theSlug()
     {
         global $post;
 
-        echo $post->post_name ?? "";
+        echo $post->post_name??"";
     }
 }
