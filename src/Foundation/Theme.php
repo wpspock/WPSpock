@@ -13,6 +13,8 @@
 
 namespace WPScotty\WPSpock\Foundation;
 
+use WPScotty\WPSpock\Header\Header;
+use WPScotty\WPSpock\Post\Post;
 use WPScotty\WPSpock\Support\Str;
 
 
@@ -43,6 +45,20 @@ class Theme
      * @var $theme
      */
     protected $theme;
+
+    /**
+     * Instance of Post class.
+     *
+     * @var Post
+     */
+    private $post = null;
+
+    /**
+     * Instance of Header class.
+     *
+     * @var null
+     */
+    private $header = null;
 
     public function __construct()
     {
@@ -196,6 +212,25 @@ class Theme
                 }
             }
 
+            // load the editor configuration
+            $editor = require get_template_directory() . '/config/editor.php';
+
+            if (!empty($editor['editor-styles'])) {
+                // Add support for editor styles.
+                add_theme_support('editor-styles');
+
+                // Enqueue editor styles.
+                add_editor_style($editor['editor-styles']);
+            }
+
+            if (!empty($editor['editor-font-sizes'])) {
+                add_theme_support('editor-font-sizes', $editor['editor-font-sizes']);
+            }
+
+            if (!empty($editor['editor-color-palette'])) {
+                add_theme_support('editor-color-palette', $editor['editor-color-palette']);
+            }
+
         });
 
         /**
@@ -337,7 +372,7 @@ class Theme
      */
     public function view(string $path)
     {
-        $path     = ltrim($path, '/');
+        $path = ltrim($path, '/');
         require "{$this->themePath}/resources/views/{$path}";
     }
 
@@ -351,6 +386,34 @@ class Theme
     public function provider(string $key)
     {
         return $GLOBALS["spock_service_provider_{$key}"]??null;
+    }
+
+    /**
+     * Return an instance of post
+     *
+     * @return \WPScotty\WPSpock\Post\Post
+     */
+    public function post(): Post
+    {
+        if (!$this->post) {
+            $this->post = new Post;
+        }
+
+        return $this->post;
+    }
+
+    /**
+     * Return an instance of post
+     *
+     * @return \WPScotty\WPSpock\Header\Header
+     */
+    public function header(): Header
+    {
+        if (!$this->header) {
+            $this->header = new Header;
+        }
+
+        return $this->header;
     }
 
     /**

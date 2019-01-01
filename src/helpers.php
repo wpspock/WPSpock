@@ -4,6 +4,12 @@
  */
 
 if (!function_exists('spock')) {
+
+    /**
+     * Return the instance of Theme.
+     *
+     * @return \WPScotty\WPSpock\Foundation\Theme
+     */
     function spock()
     {
         return $GLOBALS[ 'WPSpock' ];
