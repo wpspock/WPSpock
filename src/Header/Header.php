@@ -2,6 +2,10 @@
 
 namespace WPScotty\WPSpock\Header;
 
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 class Header
 {
 

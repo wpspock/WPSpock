@@ -2,6 +2,10 @@
 
 namespace WPScotty\WPSpock\Post;
 
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 class Post
 {
 
