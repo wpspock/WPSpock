@@ -13,8 +13,8 @@
 
 namespace WPScotty\WPSpock\Foundation;
 
-use WPScotty\WPSpock\Header\Header;
 use WPScotty\WPSpock\Footer\Footer;
+use WPScotty\WPSpock\Header\Header;
 use WPScotty\WPSpock\Post\Post;
 use WPScotty\WPSpock\Support\Str;
 
@@ -318,38 +318,6 @@ class Theme
             require get_template_directory() . '/resources/wp_footer.php';
         });
 
-        /**
-         * Body class
-         */
-
-
-        /**
-         * Implement the Custom Header feature.
-         */
-        //require get_template_directory() . '/inc/custom-header.php';
-
-        /**
-         * Custom template tags for this theme.
-         */
-        //require get_template_directory() . '/inc/template-tags.php';
-
-        /**
-         * Functions which enhance the theme by hooking into WordPress.
-         */
-        //require get_template_directory() . '/inc/template-functions.php';
-
-        /**
-         * Customizer additions.
-         */
-        //require get_template_directory() . '/inc/customizer.php';
-
-
-        /**
-         * Load Jetpack compatibility file.
-         */
-        if (defined('JETPACK__VERSION')) {
-            require get_template_directory() . '/inc/jetpack.php';
-        }
     }
 
     /**
