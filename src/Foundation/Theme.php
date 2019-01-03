@@ -14,6 +14,7 @@
 namespace WPScotty\WPSpock\Foundation;
 
 use WPScotty\WPSpock\Header\Header;
+use WPScotty\WPSpock\Footer\Footer;
 use WPScotty\WPSpock\Post\Post;
 use WPScotty\WPSpock\Support\Str;
 
@@ -56,9 +57,16 @@ class Theme
     /**
      * Instance of Header class.
      *
-     * @var null
+     * @var Header
      */
     private $header = null;
+
+    /**
+     * Instance of Footer class.
+     *
+     * @var Footer
+     */
+    private $footer = null;
 
     public function __construct()
     {
@@ -376,7 +384,6 @@ class Theme
         require "{$this->themePath}/resources/views/{$path}";
     }
 
-
     /**
      * Return an instance of a registered provider in the `config/theme.php`.
      *
@@ -414,6 +421,20 @@ class Theme
         }
 
         return $this->header;
+    }
+
+    /**
+     * Return an instance of footer
+     *
+     * @return \WPScotty\WPSpock\Footer\Footer
+     */
+    public function footer(): Footer
+    {
+        if (!$this->footer) {
+            $this->footer = new Footer;
+        }
+
+        return $this->footer;
     }
 
     /**
