@@ -233,10 +233,33 @@ class Theme
 
             if (!empty($editor['editor-font-sizes'])) {
                 add_theme_support('editor-font-sizes', $editor['editor-font-sizes']);
+
+                add_action('wp_head', function () use ($editor) {
+                     ?><style type="text/css">
+                     <?php foreach($editor['editor-font-sizes'] as $font) : ?>
+                        .has-<?php echo $font['slug'] ?>-font-size {
+                            font-size: <?php echo $font['size'] ?>px;
+                        }
+                     <?php endforeach; ?>
+                     </style><?php
+                 });
             }
 
             if (!empty($editor['editor-color-palette'])) {
                 add_theme_support('editor-color-palette', $editor['editor-color-palette']);
+
+                add_action('wp_head', function () use ($editor) {
+                    ?><style type="text/css">
+                    <?php foreach($editor['editor-color-palette'] as $color) : ?>
+                       .has-text-color.has-<?php echo $color['slug'] ?>-color {
+                           color: <?php echo $color['color'] ?>;
+                       }
+                       .has-background.has-<?php echo $color['slug'] ?>-background-color {
+                           background-color: <?php echo $color['color'] ?>;
+                       }
+                    <?php endforeach; ?>
+                    </style><?php
+                });
             }
 
         });

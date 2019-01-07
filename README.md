@@ -22,7 +22,7 @@
 
 </p>
 
-WP Bones is a framework for [WordPress](http://wordpress.org) written with [composer](https://getcomposer.org/).
+WP Spock is a framework for [WordPress](http://wordpress.org) written with [composer](https://getcomposer.org/).
 You can use [WP Kirk](https://github.com/wpbones/WPKirk) repo as a boilerplate to create a plugin.
 
 As you know, WordPress doesn't support composer. So, I have used a little trick to fix this issue.
