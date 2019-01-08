@@ -44,18 +44,6 @@ if (file_exists(__DIR__ . '/vendor/autoload.php')) {
     require __DIR__ . '/vendor/autoload.php';
 }
 
-/*
-|--------------------------------------------------------------------------
-| Load this plugin env
-|--------------------------------------------------------------------------
-|
-*/
-
-if (file_exists(__DIR__ . '/bootstrap/plugin.php')) {
-    //$plugin = require_once __DIR__ . '/bootstrap/plugin.php';
-}
-
-
 /**
  * @class SpockCommandLine
  */
@@ -65,7 +53,7 @@ class SpockCommandLine
     /**
      * WP Bones version
      */
-    const VERSION = '0.1.0';
+    const VERSION = '0.1.1';
 
     /**
      * Plugin name.
@@ -88,20 +76,15 @@ class SpockCommandLine
      */
     protected $kernel = null;
 
+    /**
+     * List of files and folders to skip during the deploy.
+     *
+     * @var array
+     */
+    protected $skipWhenDeploy = [];
+
     public function __construct()
     {
-//        list($pluginName, $namespace) = explode(",", file_get_contents('namespace'));
-//
-//        $this->plginName = $pluginName;
-//        $this->namespace = $namespace;
-//
-//        $kernelClass        = "{$namespace}\\Console\\Kernel";
-//        $WPBoneskernelClass = "{$namespace}\\WPBones\\Foundation\\Console\\Kernel";
-//
-//        if (class_exists($WPBoneskernelClass) && class_exists($kernelClass)) {
-//            $this->kernel = new $kernelClass;
-//        }
-
         $this->handle();
     }
 
@@ -434,6 +417,29 @@ class SpockCommandLine
             // alternative method to customize the deploy
             include 'deploy.php';
 
+            // files and folders to skip
+            $this->skipWhenDeploy = [
+                '.',
+                '..',
+                'node_modules',
+                '.git',
+                '.gitignore',
+                '.DS_Store',
+                'spock',
+                'deploy.php',
+                'composer.json',
+                'composer.lock',
+                'package.json',
+                'package-lock.json',
+                'yarn.lock',
+                'README.md',
+                'webpack.mix.js',
+                'phpcs.xml.dist',
+                'mix-manifest.json',
+            ];
+
+            $this->skipWhenDeploy = apply_filters('wpspock_console_deploy_skip', $this->skipWhenDeploy);
+
             $this->xcopy(__DIR__, $path);
 
             /**
@@ -548,29 +554,7 @@ class SpockCommandLine
 
     protected function skip($entry)
     {
-        $skip = [
-            '.',
-            '..',
-            'node_modules',
-            '.git',
-            '.gitignore',
-            '.DS_Store',
-            'spock',
-            'deploy.php',
-            'composer.json',
-            'composer.lock',
-            'package.json',
-            'package-lock.json',
-            'yarn.lock',
-            'README.md',
-            'webpack.mix.js',
-            'phpcs.xml.dist',
-            'mix-manifest.json',
-        ];
-
-        $skip = apply_filters('wpspock_console_deploy_skip', $skip);
-
-        return in_array($entry,$skip);
+        return in_array($entry,$this->skipWhenDeploy);
     }
 
     protected function createMigrate($tablename)
