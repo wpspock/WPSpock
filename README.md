@@ -22,8 +22,9 @@
 
 </p>
 
-WP Spock is a framework for [WordPress](http://wordpress.org) written with [composer](https://getcomposer.org/).
-You can use [WP Kirk](https://github.com/wpspock/WPScotty) repo as a boilerplate to create a theme.
+WP Spock is a framework for [WordPress](http://wordpress.org) written with [composer](https://getcomposer.org/) and [Laravel Mix](https://github.com/JeffreyWay/laravel-mix).
+
+To use this framework, you have to start from [WP Scotty](https://github.com/wpspock/WPScotty) repo as a boilerplate to create a theme.
 
 ## Documentation
 
