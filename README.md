@@ -1,23 +1,23 @@
 <p align="center">
-  <img src="https://github.com/wpbones/WPBones/wiki/images/wp-bones-logo-little.png" alt="WP Bones Logo" />
+  <img src="/wpspock/WPSpock/wiki/images/wp-spock-logo-little.png" alt="WP Spock Logo" />
 </p>
 
 <p align="center">
 
-  <a href="https://packagist.org/packages/wpbones/wpbones">
-   <img src="https://poser.pugx.org/wpbones/wpbones/v/stable" alt="Latest Stable Version" />
+  <a href="https://packagist.org/packages/wpspock/wpspock">
+   <img src="https://poser.pugx.org/wpbones/wpspock/v/stable" alt="Latest Stable Version" />
   </a>
   
-  <a href="https://packagist.org/packages/wpbones/wpbones">
-   <img src="https://poser.pugx.org/wpbones/wpbones/downloads" alt="Total Downloads" />
+  <a href="https://packagist.org/packages/wpspock/wpspock">
+   <img src="https://poser.pugx.org/wpspock/wpspock/downloads" alt="Total Downloads" />
   </a>
 
-  <a href="https://packagist.org/packages/wpbones/wpbones">
-   <img src="https://poser.pugx.org/wpbones/wpbones/license" alt="License" />
+  <a href="https://packagist.org/packages/wpspock/wpspock">
+   <img src="https://poser.pugx.org/wpspock/wpspock/license" alt="License" />
   </a>
   
-  <a href="https://packagist.org/packages/wpbones/wpbones">
-   <img src="https://poser.pugx.org/wpbones/wpbones/d/monthly" alt="Monthly Downloads" />
+  <a href="https://packagist.org/packages/wpspock/wpspock">
+   <img src="https://poser.pugx.org/wpspock/wpspock/d/monthly" alt="Monthly Downloads" />
   </a>
 
 </p>
