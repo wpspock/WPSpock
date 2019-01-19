@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="/wpspock/WPSpock/wiki/images/wp-spock-logo-little.png" alt="WP Spock Logo" />
+  <img src="https://github.com/wpspock/WPSpock/wiki/images/wp-spock-logo-little.png" alt="WP Spock Logo" />
 </p>
 
 <p align="center">
