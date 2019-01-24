@@ -17,6 +17,7 @@ use WPScotty\WPSpock\Footer\Footer;
 use WPScotty\WPSpock\Header\Header;
 use WPScotty\WPSpock\Post\Post;
 use WPScotty\WPSpock\Support\Str;
+use WPScotty\WPSpock\Database\WordPressOption;
 
 
 if (!defined('ABSPATH')) {
@@ -68,14 +69,19 @@ class Theme
      */
     private $footer = null;
 
+    /**
+     * An instance of WordPress options class used to manage the options on the database.
+     *
+     * @var null
+     */
+    private $options_ = null;
+
     public function __construct()
     {
 
         $this->themePath = get_template_directory();
         $this->themeUri  = get_template_directory_uri();
         $this->theme     = wp_get_theme();
-
-        //logger("BOOOT",[$this->version]);
 
         $this->boot();
     }
@@ -437,5 +443,19 @@ class Theme
         global $post;
 
         echo $post->post_name??"";
+    }
+
+    protected function getOptionsAttribute()
+    {
+        if (is_null($this->options_)) {
+            $this->options_ = new WordPressOption($this);
+        }
+
+        return $this->options_;
+    }
+
+    protected function getSlugAttribute()
+    {
+      return Str::snake($this->theme->Name);
     }
 }
