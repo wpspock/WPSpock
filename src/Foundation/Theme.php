@@ -241,30 +241,38 @@ class Theme
                 add_theme_support('editor-font-sizes', $editor['editor-font-sizes']);
 
                 add_action('wp_head', function () use ($editor) {
-                     ?><style type="text/css">
-                     <?php foreach($editor['editor-font-sizes'] as $font) : ?>
-                        .has-<?php echo $font['slug'] ?>-font-size {
-                            font-size: <?php echo $font['size'] ?>px;
-                        }
-                     <?php endforeach; ?>
-                     </style><?php
-                 });
+                    ?>
+                  <style type="text/css">
+                  <?php foreach($editor['editor-font-sizes'] as $font) : ?>
+                  .has-<?php echo $font['slug'] ?>-font-size
+                  {
+                    font-size : <?php echo $font['size'] ?>px;
+                  }
+
+                  <?php endforeach; ?>
+                  </style><?php
+                });
             }
 
             if (!empty($editor['editor-color-palette'])) {
                 add_theme_support('editor-color-palette', $editor['editor-color-palette']);
 
                 add_action('wp_head', function () use ($editor) {
-                    ?><style type="text/css">
-                    <?php foreach($editor['editor-color-palette'] as $color) : ?>
-                       .has-text-color.has-<?php echo $color['slug'] ?>-color {
-                           color: <?php echo $color['color'] ?>;
-                       }
-                       .has-background.has-<?php echo $color['slug'] ?>-background-color {
-                           background-color: <?php echo $color['color'] ?>;
-                       }
-                    <?php endforeach; ?>
-                    </style><?php
+                    ?>
+                  <style type="text/css">
+                  <?php foreach($editor['editor-color-palette'] as $color) : ?>
+                  .has-text-color.has-<?php echo $color['slug'] ?>-color
+                  {
+                    color : <?php echo $color['color'] ?>;
+                  }
+
+                  .has-background.has-<?php echo $color['slug'] ?>-background-color
+                  {
+                    background-color : <?php echo $color['color'] ?>;
+                  }
+
+                  <?php endforeach; ?>
+                  </style><?php
                 });
             }
 
@@ -445,6 +453,24 @@ class Theme
         echo $post->post_name??"";
     }
 
+    /**
+     * Wrapper of get_theme_mod() function.
+     *
+     * @param string         $name    Modification/setting name.
+     * @param string|boolean $default Optional. Default value.
+     * @return string
+     */
+    public function mod($name, $default = false)
+    {
+        return get_theme_mod($name, $default);
+    }
+
+    /**
+     * Return the Options theme instance used to get/set/delete options theme.
+     * You'll be able to use spock()->options->get('myoption')
+     *
+     * @return \WPScotty\WPSpock\Database\WordPressOption|null
+     */
     protected function getOptionsAttribute()
     {
         if (is_null($this->options_)) {
@@ -454,8 +480,13 @@ class Theme
         return $this->options_;
     }
 
+    /**
+     * Return the slug of theme based on theme name.
+     *
+     * @return string
+     */
     protected function getSlugAttribute()
     {
-      return Str::snake($this->theme->Name);
+        return Str::snake($this->theme->Name);
     }
 }
