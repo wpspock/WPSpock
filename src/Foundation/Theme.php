@@ -315,7 +315,7 @@ class Theme
         add_action('wp_enqueue_scripts', function () {
 
             // enqueue the main theme styles
-            wp_enqueue_style('spock-style', get_stylesheet_uri());
+            wp_enqueue_style('spock-style', get_stylesheet_uri(), [], wp_get_theme()->version);
 
             if (is_singular() && comments_open() && get_option('thread_comments')) {
                 wp_enqueue_script('comment-reply');
