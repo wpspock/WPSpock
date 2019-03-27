@@ -4,7 +4,7 @@
   "homepage": "https://github.com/wpspock/wpspock",
   "type": "library",
   "description": "WordPress theme framework",
-  "keywords": [ "wordpress", "laravel", "framework", "wpbones", "plugins", "themes" ],
+  "keywords": [ "wordpress", "laravel", "framework", "wpspock", "wpbones", "plugins", "themes" ],
   "license": "GPL-3.0",
   "authors": [
     {
