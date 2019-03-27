@@ -53,7 +53,7 @@ class SpockCommandLine
     /**
      * WP Bones version
      */
-    const VERSION = '0.1.1';
+    const VERSION = '0.1.2';
 
     /**
      * Plugin name.

@@ -17,6 +17,7 @@ use WPScotty\WPSpock\Footer\Footer;
 use WPScotty\WPSpock\Header\Header;
 use WPScotty\WPSpock\Post\Post;
 use WPScotty\WPSpock\Support\Str;
+use WPScotty\WPSpock\Support\MinifyHTML;
 use WPScotty\WPSpock\Database\WordPressOption;
 
 
@@ -103,18 +104,18 @@ class Theme
         add_action('after_setup_theme', function () {
 
             // load the theme configuration
-            $init = require get_template_directory() . '/config/theme.php';
+            $theme = require get_template_directory() . '/config/theme.php';
 
-            if (!empty($init)) {
+            if (!empty($theme)) {
 
                 // add_editor_style
-                if (isset($init['add_editor_style']) && $init['add_editor_style']) {
+                if (isset($theme['add_editor_style']) && $theme['add_editor_style']) {
                     add_editor_style();
                 }
 
                 // add_theme_support
-                if (isset($init['theme_support']) && is_array($init['theme_support'])) {
-                    foreach ($init['theme_support'] as $key => $value) {
+                if (isset($theme['theme_support']) && is_array($theme['theme_support'])) {
+                    foreach ($theme['theme_support'] as $key => $value) {
                         if (is_numeric($key)) {
                             add_theme_support($value);
                         } else {
@@ -124,13 +125,18 @@ class Theme
                 }
 
                 // Custom service provider
-                if (isset($init['providers'])) {
-                    foreach ($init['providers'] as $key => $className) {
+                if (isset($theme['providers'])) {
+                    foreach ($theme['providers'] as $key => $className) {
                         $GLOBALS["spock_service_provider_{$key}"] = new $className;
                     }
                 }
 
-                /*
+                // Minify HTML
+                if(isset($theme['minify']) && $theme['minify']) {
+                  MinifyHTML::init();
+                }
+
+                  /*
                  * Make theme available for translation.
                  * Translations can be filed in the /languages/ directory.
                  */
@@ -168,6 +174,17 @@ class Theme
                     add_filter('the_generator', function () {
                         return '';
                     });
+                }
+
+                // clean wp_head
+                if(!empty($wordpress['clean_wp_head'])) {
+                    remove_action('wp_head', 'wp_resource_hints', 2);
+                    remove_action('template_redirect', 'wp_shortlink_header', 11);
+                    remove_action('wp_head', 'wlwmanifest_link');
+                    remove_action('wp_head', 'rsd_link');
+                    remove_action('wp_head', 'adjacent_posts_rel_link_wp_head', 10, 0);
+                    remove_action('wp_head', 'feed_links', 2);
+                    remove_action('wp_head', 'feed_links_extra', 3);
                 }
 
                 // disable autentication by email
@@ -273,6 +290,13 @@ class Theme
 
                   <?php endforeach; ?>
                   </style><?php
+                });
+            }
+
+            if(!empty($editor['upload_mimes'])) {
+                $upload_mimes = $editor['upload_mimes'];
+                add_filter('upload_mimes', function ($mimes = []) use ($upload_mimes) {
+                    return array_merge($mimes,$upload_mimes);
                 });
             }
 
