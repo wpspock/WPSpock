@@ -2,44 +2,43 @@
 
 namespace WPScotty\WPSpock\Support;
 
-if (! defined('ABSPATH')) {
+if (!defined('ABSPATH')) {
     exit;
 }
 
 class MinifyHTML
 {
 
-    protected $html = '';
-
     protected static $instance = null;
-
-    public static function init() {
-        if(!self::$instance) {
-            self::$instance = new self;
-        }
-        add_action('template_redirect', [self::$instance, 'startMinify'], PHP_INT_MAX);
-    }
+    protected $html = '';
 
     public function __construct($html = '')
     {
         $this->html = $html;
     }
 
-    public function startMinify() {
+    public static function init()
+    {
+        if (!self::$instance) {
+            self::$instance = new self;
+        }
+        add_action('template_redirect', [self::$instance, 'startMinify'], PHP_INT_MAX);
+    }
+
+    public function startMinify()
+    {
         ob_start([$this, 'endMinify']);
     }
 
-    public function endMinify($html) {
-        $this->html = $html;
-        return $this->minify();
-    }
-
-    public function __toString()
+    public function endMinify($html)
     {
+        $this->html = $html;
+
         return $this->minify();
     }
 
-    protected function minify() {
+    protected function minify()
+    {
         // first of all
         $this->html = str_replace("\r\n", "\n", trim($this->html));
 
@@ -55,5 +54,10 @@ class MinifyHTML
         $replacement = ['', '', ' ',];
 
         return preg_replace($pattern, $replacement, $this->html);
+    }
+
+    public function __toString()
+    {
+        return $this->minify();
     }
 }

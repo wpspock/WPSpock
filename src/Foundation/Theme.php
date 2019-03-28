@@ -13,12 +13,12 @@
 
 namespace WPScotty\WPSpock\Foundation;
 
+use WPScotty\WPSpock\Database\WordPressOption;
 use WPScotty\WPSpock\Footer\Footer;
 use WPScotty\WPSpock\Header\Header;
 use WPScotty\WPSpock\Post\Post;
-use WPScotty\WPSpock\Support\Str;
 use WPScotty\WPSpock\Support\MinifyHTML;
-use WPScotty\WPSpock\Database\WordPressOption;
+use WPScotty\WPSpock\Support\Str;
 
 
 if (!defined('ABSPATH')) {
@@ -87,18 +87,6 @@ class Theme
         $this->boot();
     }
 
-    public function __get($name)
-    {
-        $method = 'get' . Str::studly($name) . 'Attribute';
-        if (method_exists($this, $method)) {
-            return $this->{$method}();
-        }
-
-        if (property_exists($this->theme, $name)) {
-            return $this->theme->{$name};
-        }
-    }
-
     protected function boot()
     {
         add_action('after_setup_theme', function () {
@@ -132,11 +120,11 @@ class Theme
                 }
 
                 // Minify HTML
-                if(isset($theme['minify']) && $theme['minify']) {
-                  MinifyHTML::init();
+                if (isset($theme['minify']) && $theme['minify']) {
+                    MinifyHTML::init();
                 }
 
-                  /*
+                /**
                  * Make theme available for translation.
                  * Translations can be filed in the /languages/ directory.
                  */
@@ -177,7 +165,7 @@ class Theme
                 }
 
                 // clean wp_head
-                if(!empty($wordpress['clean_wp_head'])) {
+                if (!empty($wordpress['clean_wp_head'])) {
                     remove_action('wp_head', 'wp_resource_hints', 2);
                     remove_action('template_redirect', 'wp_shortlink_header', 11);
                     remove_action('wp_head', 'wlwmanifest_link');
@@ -293,10 +281,10 @@ class Theme
                 });
             }
 
-            if(!empty($editor['upload_mimes'])) {
+            if (!empty($editor['upload_mimes'])) {
                 $upload_mimes = $editor['upload_mimes'];
                 add_filter('upload_mimes', function ($mimes = []) use ($upload_mimes) {
-                    return array_merge($mimes,$upload_mimes);
+                    return array_merge($mimes, $upload_mimes);
                 });
             }
 
@@ -389,6 +377,43 @@ class Theme
     protected function vendor(): string
     {
         return '/vendor/wpspock/wpspock/src/';
+    }
+
+    /**
+     * Return the Options theme instance used to get/set/delete options theme.
+     * You'll be able to use spock()->options->get('myoption')
+     *
+     * @return \WPScotty\WPSpock\Database\WordPressOption|null
+     */
+    protected function getOptionsAttribute()
+    {
+        if (is_null($this->options_)) {
+            $this->options_ = new WordPressOption($this);
+        }
+
+        return $this->options_;
+    }
+
+    /**
+     * Return the slug of theme based on theme name.
+     *
+     * @return string
+     */
+    protected function getSlugAttribute()
+    {
+        return Str::snake($this->theme->Name);
+    }
+
+    public function __get($name)
+    {
+        $method = 'get' . Str::studly($name) . 'Attribute';
+        if (method_exists($this, $method)) {
+            return $this->{$method}();
+        }
+
+        if (property_exists($this->theme, $name)) {
+            return $this->theme->{$name};
+        }
     }
 
     /**
@@ -487,30 +512,5 @@ class Theme
     public function mod($name, $default = false)
     {
         return get_theme_mod($name, $default);
-    }
-
-    /**
-     * Return the Options theme instance used to get/set/delete options theme.
-     * You'll be able to use spock()->options->get('myoption')
-     *
-     * @return \WPScotty\WPSpock\Database\WordPressOption|null
-     */
-    protected function getOptionsAttribute()
-    {
-        if (is_null($this->options_)) {
-            $this->options_ = new WordPressOption($this);
-        }
-
-        return $this->options_;
-    }
-
-    /**
-     * Return the slug of theme based on theme name.
-     *
-     * @return string
-     */
-    protected function getSlugAttribute()
-    {
-        return Str::snake($this->theme->Name);
     }
 }

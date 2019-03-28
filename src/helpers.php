@@ -12,6 +12,6 @@ if (!function_exists('spock')) {
      */
     function spock()
     {
-        return $GLOBALS[ 'WPSpock' ];
+        return $GLOBALS['WPSpock'];
     }
 }

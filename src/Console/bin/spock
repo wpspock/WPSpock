@@ -95,11 +95,40 @@ class SpockCommandLine
         $this->handle();
     }
 
-    public static function run()
+    /**
+     * Run subtask.
+     * Check argv from console and execute a task.
+     *
+     */
+    protected function handle()
     {
-        $instance = new self;
+        $argv = $_SERVER['argv'];
 
-        return $instance;
+        // strip the application name
+        array_shift($argv);
+
+        if (empty($argv) || (isset($argv[0]) && "--help" === $argv[0])) {
+            $this->help();
+        } // Deploy
+        elseif ($this->option('deploy')) {
+            $this->deploy($argv[1]??false);
+        } // Optimize
+        elseif ($this->option('optimize')) {
+            $this->optimize();
+        } // Tinker
+        elseif ($this->option('tinker')) {
+            $this->tinker();
+        } else {
+            $extended = false;
+
+            if ($this->kernel) {
+                $extended = $this->kernel->handle($argv);
+            }
+
+            if (!$extended) {
+                $this->info("\nUnknown command! Use --help for commands list\n");
+            }
+        }
     }
 
     /*
@@ -140,31 +169,16 @@ class SpockCommandLine
         echo "\n\n";
     }
 
-    protected function line($str)
-    {
-        echo "\033[38;5;82m" . $str;
-        echo "\033[0m\n";
-    }
-
     protected function info($str)
     {
         echo "\033[38;5;213m" . $str;
         echo "\033[0m\n";
     }
 
-    protected function ask($str, $default = '')
+    protected function line($str)
     {
-
-        echo "\n\e[38;5;88m$str" . (empty($default) ? "" : " (default: {$default})") . "\e[0m ";
-
-        $handle = fopen("php://stdin", "r");
-        $line   = fgets($handle);
-
-        fclose($handle);
-
-        $line = trim($line, " \n\r");
-
-        return $line ?: $default;
+        echo "\033[38;5;82m" . $str;
+        echo "\033[0m\n";
     }
 
     protected function option($option)
@@ -176,15 +190,6 @@ class SpockCommandLine
 
         return in_array($option, $argv);
     }
-
-    /*
-    |--------------------------------------------------------------------------
-    | Public task
-    |--------------------------------------------------------------------------
-    |
-    | Here you will find all tasks that a user can run from console.
-    |
-    */
 
     protected function deploy($path)
     {
@@ -245,52 +250,28 @@ class SpockCommandLine
         }
     }
 
-    protected function optimize()
+    /*
+    |--------------------------------------------------------------------------
+    | Public task
+    |--------------------------------------------------------------------------
+    |
+    | Here you will find all tasks that a user can run from console.
+    |
+    */
+
+    protected function ask($str, $default = '')
     {
-        $this->line(`composer dump-autoload -o`);
-    }
 
-    protected function tinker()
-    {
-        $eval = $this->ask(">>>");
+        echo "\n\e[38;5;88m$str" . (empty($default) ? "" : " (default: {$default})") . "\e[0m ";
 
-        try {
+        $handle = fopen("php://stdin", "r");
+        $line   = fgets($handle);
 
-            if ($eval == 'exit') {
-                exit;
-            }
+        fclose($handle);
 
-            if (substr($eval, -1) != ';') {
-                $eval .= ';';
-            }
+        $line = trim($line, " \n\r");
 
-            $this->line(eval($eval));
-        } catch (\Exception $e) {
-            $this->info(eval($e->getMessage()));
-        } finally {
-            $this->tinker();
-        }
-    }
-
-    public function deleteDirectory($path)
-    {
-        $path = rtrim($path, '/');
-
-        $this->info("Delete folder... {$path}");
-
-        array_map(function ($file) {
-
-            if (is_dir($file)) {
-                $this->deleteDirectory($file);
-            } else {
-                $this->info("Removing... {$file}");
-
-                @unlink($file);
-            }
-
-        }, glob("{$path}/" . '{,.}[!.,!..]*', GLOB_MARK | GLOB_BRACE));
-
-        @rmdir("{$path}");
+        return $line ?: $default;
     }
 
     protected function xcopy($source, $dest, $permissions = 0755)
@@ -338,40 +319,59 @@ class SpockCommandLine
         return in_array($single, $this->skipWhenDeploy);
     }
 
-    /**
-     * Run subtask.
-     * Check argv from console and execute a task.
-     *
-     */
-    protected function handle()
+    protected function optimize()
     {
-        $argv = $_SERVER['argv'];
+        $this->line(`composer dump-autoload -o`);
+    }
 
-        // strip the application name
-        array_shift($argv);
+    protected function tinker()
+    {
+        $eval = $this->ask(">>>");
 
-        if (empty($argv) || (isset($argv[0]) && "--help" === $argv[0])) {
-            $this->help();
-        } // Deploy
-        elseif ($this->option('deploy')) {
-            $this->deploy($argv[1]??false);
-        } // Optimize
-        elseif ($this->option('optimize')) {
-            $this->optimize();
-        } // Tinker
-        elseif ($this->option('tinker')) {
+        try {
+
+            if ($eval == 'exit') {
+                exit;
+            }
+
+            if (substr($eval, -1) != ';') {
+                $eval .= ';';
+            }
+
+            $this->line(eval($eval));
+        } catch (Exception $e) {
+            $this->info(eval($e->getMessage()));
+        } finally {
             $this->tinker();
-        } else {
-            $extended = false;
-
-            if ($this->kernel) {
-                $extended = $this->kernel->handle($argv);
-            }
-
-            if (!$extended) {
-                $this->info("\nUnknown command! Use --help for commands list\n");
-            }
         }
+    }
+
+    public static function run()
+    {
+        $instance = new self;
+
+        return $instance;
+    }
+
+    public function deleteDirectory($path)
+    {
+        $path = rtrim($path, '/');
+
+        $this->info("Delete folder... {$path}");
+
+        array_map(function ($file) {
+
+            if (is_dir($file)) {
+                $this->deleteDirectory($file);
+            } else {
+                $this->info("Removing... {$file}");
+
+                @unlink($file);
+            }
+
+        }, glob("{$path}/" . '{,.}[!.,!..]*', GLOB_MARK | GLOB_BRACE));
+
+        @rmdir("{$path}");
     }
 }
 
