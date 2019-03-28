@@ -3,9 +3,9 @@
 </p>
 
 <p align="center">
-
+  
   <a href="https://packagist.org/packages/wpspock/wpspock">
-   <img src="https://poser.pugx.org/wpbones/wpspock/v/stable" alt="Latest Stable Version" />
+   <img src="https://poser.pugx.org/wpspock/wpspock/v/stable" alt="Latest Stable Version" />
   </a>
   
   <a href="https://packagist.org/packages/wpspock/wpspock">
