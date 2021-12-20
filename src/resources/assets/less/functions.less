@@ -41,10 +41,10 @@
 }
 
 // Box sizing
-.box-sizing( @sizing ) {
-  -webkit-box-sizing: @sizing;
-  -moz-box-sizing: @sizing;
-  box-sizing: @sizing;
+.box-sizing (@type: border-box) {
+  -webkit-box-sizing: @type;
+  -moz-box-sizing: @type;
+  box-sizing: @type;
 }
 
 // Transitions
@@ -65,9 +65,33 @@
   transform: @transform;
 }
 
-// Box sizing
-.box-sizing (@type: border-box) {
-  -webkit-box-sizing: @type;
-  -moz-box-sizing: @type;
-  box-sizing: @type;
+// utilities for...loop
+.for(@list, @code) {
+  & {
+    .loop(@i:1) when (@i =< length(@list)) {
+      @value: extract(@list, @i);
+
+      @code();
+
+      .loop(@i + 1);
+    }
+
+    .loop();
+  }
+}
+
+.forKey(@list, @code) {
+  & {
+    .loop(@i:1) when (@i =< length(@list)) {
+      @pairs: extract(@list, @i);
+      @key: extract(@pairs, 1);
+      @value: extract(@pairs, 2);
+
+      @code();
+
+      .loop(@i + 1);
+    }
+
+    .loop();
+  }
 }

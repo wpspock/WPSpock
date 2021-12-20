@@ -20,7 +20,6 @@ use WPScotty\WPSpock\Post\Post;
 use WPScotty\WPSpock\Support\MinifyHTML;
 use WPScotty\WPSpock\Support\Str;
 
-
 if (!defined('ABSPATH')) {
     exit;
 }
@@ -79,7 +78,6 @@ class Theme
 
     public function __construct()
     {
-
         $this->themePath = get_template_directory();
         $this->themeUri  = get_template_directory_uri();
         $this->theme     = wp_get_theme();
@@ -191,31 +189,35 @@ class Theme
                 if (isset($wordpress['comments']['author_link'])
                     && false === $wordpress['comments']['author_link']) {
                     remove_filter('get_comment_author_link', '__return_false');
-                    add_filter('get_comment_author_link',
+                    add_filter(
+                        'get_comment_author_link',
                         function ($return, $author) {
                             $return = $author;
 
                             return $return;
-
-                        }, 10, 2
+                        },
+                        10,
+                        2
                     );
                 }
 
                 // excerpt_length
                 if (isset($wordpress['posts']['excerpt_length'])) {
                     $count = $wordpress['posts']['excerpt_length'];
-                    add_filter('excerpt_length',
+                    add_filter(
+                        'excerpt_length',
                         function ($words) use ($count) {
                             return $count;
-                        }, 99);
+                        },
+                        99
+                    );
                 }
 
                 // feed
                 if (isset($wordpress['feed'])
                     && false === $wordpress['feed']) {
-
                     $spock_disable_feed_hoook = function () {
-                        wp_die(__('<h1>Feed not available, please visit our <a href="' . get_bloginfo('url') . '">Home Page</a>!</h1>'));
+                        wp_die(_t('<h1>Feed not available, please visit our <a href="' . get_bloginfo('url') . '">Home Page</a>!</h1>'));
                     };
 
                     add_action('do_feed', $spock_disable_feed_hoook, 1);
@@ -248,12 +250,8 @@ class Theme
                 add_action('wp_head', function () use ($editor) {
                     ?>
                   <style type="text/css">
-                  <?php foreach($editor['editor-font-sizes'] as $font) : ?>
-                  .has-<?php echo $font['slug'] ?>-font-size
-                  {
-                    font-size : <?php echo $font['size'] ?>px;
-                  }
-
+                  <?php foreach ($editor['editor-font-sizes'] as $font) : ?>
+    <?php echo '.has-' . $font['slug'] . '-font-size { font-size: ' . $font['size'] . 'px; }'; ?>
                   <?php endforeach; ?>
                   </style><?php
                 });
@@ -265,16 +263,10 @@ class Theme
                 add_action('wp_head', function () use ($editor) {
                     ?>
                   <style type="text/css">
-                  <?php foreach($editor['editor-color-palette'] as $color) : ?>
-                  .has-text-color.has-<?php echo $color['slug'] ?>-color
-                  {
-                    color : <?php echo $color['color'] ?>;
-                  }
+                  <?php foreach ($editor['editor-color-palette'] as $color) : ?>
+    <?php echo '.has-text-color.has-' . $color['slug'] . '-color { color: ' . $color['color'] . '; }'; ?>
 
-                  .has-background.has-<?php echo $color['slug'] ?>-background-color
-                  {
-                    background-color : <?php echo $color['color'] ?>;
-                  }
+    <?php echo '.has-background.has-' . $color['slug'] . '-background-color { background-color: ' . $color['color'] . '; }'; ?>
 
                   <?php endforeach; ?>
                   </style><?php
@@ -287,7 +279,6 @@ class Theme
                     return array_merge($mimes, $upload_mimes);
                 });
             }
-
         });
 
         /**
@@ -311,7 +302,6 @@ class Theme
          * @link https://developer.wordpress.org/themes/functionality/sidebars/#registering-a-sidebar
          */
         add_action('widgets_init', function () {
-
             $sidebars = require get_template_directory() . '/config/sidebars.php';
 
             if (!empty($sidebars)) {
@@ -325,9 +315,10 @@ class Theme
          * Enqueue scripts and styles.
          */
         add_action('wp_enqueue_scripts', function () {
+            $version = apply_filters('spock_developing', wp_get_theme()->version);
 
             // enqueue the main theme styles
-            wp_enqueue_style('spock-style', get_stylesheet_uri(), [], wp_get_theme()->version);
+            wp_enqueue_style('spock-style', get_stylesheet_uri(), [], $version);
 
             if (is_singular() && comments_open() && get_option('thread_comments')) {
                 wp_enqueue_script('comment-reply');
@@ -337,7 +328,7 @@ class Theme
 
             if (!empty($scripts)) {
                 foreach ($scripts as $key => $script) {
-                    wp_enqueue_script($key, get_template_directory_uri() . "/public/js/{$script}", [], wp_get_theme()->version, true);
+                    wp_enqueue_script($key, get_template_directory_uri() . "/public/js/{$script}", [], $version, true);
                 }
             }
 
@@ -345,10 +336,9 @@ class Theme
 
             if (!empty($styles)) {
                 foreach ($styles as $key => $style) {
-                    wp_enqueue_style($key, get_template_directory_uri() . "/public/css/{$style}", [], wp_get_theme()->version, true);
+                    wp_enqueue_style($key, get_template_directory_uri() . "/public/css/{$style}", [], $version, true);
                 }
             }
-
         });
 
         /**
@@ -366,7 +356,6 @@ class Theme
         add_action('wp_footer', function () {
             require get_template_directory() . '/resources/wp_footer.php';
         });
-
     }
 
     /**
@@ -430,12 +419,52 @@ class Theme
     /**
      * Load a view from theme/resources/views
      *
-     * @param string $path Path filename of view.
+     * @param string $name Name-path of the view.
+     * @param array $data Data to be passed to view.
      */
-    public function view(string $path)
+    public function view(string $name, $data = [])
     {
-        $path = ltrim($path, '/');
-        require "{$this->themePath}/resources/views/{$path}";
+        extract($data);
+        $name = ltrim($name, '/');
+        return include "{$this->themePath}/resources/views/{$name}";
+    }
+
+    /**
+     * Import a file from theme.
+     */
+    public function import($path)
+    {
+        if (substr($path, 0, 1) === '/') {
+            return include($this->themePath . $path);
+        }
+
+        return include($path);
+    }
+
+    /**
+     * Import a Component from the theme.
+     *
+     * @param string $name Name of the component.
+     */
+    public function component($name)
+    {
+        return include("{$this->themePath}/theme/Components/{$name}.php");
+    }
+
+    /**
+     * Return the css class string from an array of classes.
+     *
+     * @param array $classes Array of classes.
+     * @param array $props Optional. Array of a component properties.
+     * @return string
+     *
+     */
+    public function cls($classes = [], $props = [])
+    {
+        $merged = array_merge($classes, $props['class'] ?? []);
+        $merged = array_filter($merged);
+
+        return trim(join(' ', $merged));
     }
 
     /**
@@ -499,7 +528,7 @@ class Theme
     {
         global $post;
 
-        echo $post->post_name??"";
+        echo $post->post_name ?? "";
     }
 
     /**

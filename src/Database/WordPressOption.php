@@ -8,7 +8,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-class WordPressOption implements ArrayAccess
+class WordPressOption implements \ArrayAccess
 {
 
     /**
@@ -27,7 +27,7 @@ class WordPressOption implements ArrayAccess
         'option_id',
         'option_name',
         'option_value',
-        'autoload',
+    'autoload'
     ];
 
     /**
@@ -40,7 +40,7 @@ class WordPressOption implements ArrayAccess
     /**
      * Option record.
      *
-     * @var array|null|object|void
+     * @var array|null|object
      */
     protected $row;
 
@@ -81,7 +81,7 @@ class WordPressOption implements ArrayAccess
             }
 
             if (isset($this->row->option_value) && !empty($this->row->option_value)) {
-                $this->_value = (array) json_decode($this->row->option_value, true);
+                $this->_value = (array)json_decode($this->row->option_value, true);
             }
         }
     }
@@ -106,9 +106,38 @@ class WordPressOption implements ArrayAccess
         return $this->_value;
     }
 
-    public function offsetSet($offset, $value)
+    /**
+     * Return a branch/single option by path.
+     *
+     * @param string $path    The path option.
+     * @param string $default Optional. A default value if the option doesn't exists.
+     *
+     * @example
+     *
+     *     echo $plugin->options->get( 'General.doNotExists', 'default');
+     *
+     * @return array|mixed|string
+     */
+    public function get($path, $default = "")
     {
-        $this->set($offset, $value);
+        $path = str_replace('/', '.', $path);
+        $keys = explode(".", $path);
+
+        $current = $this->_value;
+
+        foreach ($keys as $key) {
+            if (!isset($current[$key])) {
+                return $default;
+            }
+
+            if (is_object($current[$key])) {
+                $current = (array)$current[$key];
+            } else {
+                $current = $current[$key];
+            }
+        }
+
+        return $current;
     }
 
     /**
@@ -130,14 +159,14 @@ class WordPressOption implements ArrayAccess
 
         $copy = $this->_value;
 
-        $array = &$copy;
+        $array = & $copy;
 
         foreach ($keys as $key) {
             if (!isset($array[$key])) {
                 $array[$key] = '';
             }
 
-            $array = &$array[$key];
+            $array = & $array[$key];
         }
 
         $array = $value;
@@ -145,6 +174,27 @@ class WordPressOption implements ArrayAccess
         $this->update($copy);
 
         return $value;
+    }
+
+
+    public function offsetSet(mixed $offset, mixed $value): void
+    {
+        $this->set($offset, $value);
+    }
+
+    public function offsetExists(mixed $offset): bool
+    {
+        return !is_null($this->get($offset, null));
+    }
+
+    public function offsetUnset(mixed $offset): void
+    {
+        $this->set($offset);
+    }
+
+    public function offsetGet($offset)
+    {
+        return $this->get($offset);
     }
 
     /**
@@ -166,19 +216,19 @@ class WordPressOption implements ArrayAccess
 
             $lastKey = $keys[count($keys) - 1];
 
-            $array = &$this->_value;
+            $array = & $this->_value;
 
             foreach ($keys as $key) {
                 if ($key == $lastKey) {
                     unset($array[$key]);
                     break;
                 }
-                $array = &$array[$key];
+                $array = & $array[$key];
             }
         }
 
         $values = [
-            'option_value' => json_encode($this->_value),
+      'option_value' => json_encode($this->_value)
         ];
 
         $result = $wpdb->update($this->tableName, $values, ['option_name' => $this->plugin->slug]);
@@ -204,90 +254,14 @@ class WordPressOption implements ArrayAccess
         $mergeOptions = array_replace_recursive($this->_value, $options);
 
         $values = [
-            'option_value' => json_encode($mergeOptions),
+      'option_value' => json_encode($mergeOptions)
         ];
 
         $result = $wpdb->update($this->tableName, $values, ['option_name' => $this->plugin->slug]);
 
-        $this->_value = (array) json_decode($values['option_value'], true);
+        $this->_value = (array)json_decode($values['option_value'], true);
 
         return $result;
-
-    }
-
-    /**
-     * Load the default value from `config/options.php` and replace the current.
-     *
-     * @return false|int
-     */
-    public function reset()
-    {
-        global $wpdb;
-
-        $options = include $this->plugin->getBasePath() . '/config/options.php';
-
-        $values = [
-            'option_name' => $this->plugin->slug,
-            'option_value' => json_encode($options),
-        ];
-
-        $result = $wpdb->update($this->tableName, $values, ['option_name' => $this->plugin->slug]);
-
-        $this->_value = (array) json_decode($values['option_value'], true);
-
-        return $result;
-
-    }
-
-    public function offsetExists($offset)
-    {
-        return !is_null($this->get($offset, null));
-    }
-
-    /**
-     * Return a branch/single option by path.
-     *
-     * @param string $path    The path option.
-     * @param string $default Optional. A default value if the option doesn't exists.
-     *
-     * @return array|mixed|string
-     * @example
-     *
-     *     echo $theme->options->get( 'General.doNotExists', 'default');
-     *
-     */
-    public function get($path, $default = "")
-    {
-        $path = str_replace('/', '.', $path);
-        $keys = explode(".", $path);
-
-        $current = $this->_value;
-
-        foreach ($keys as $key) {
-
-            if (!isset($current[$key])) {
-                return $default;
-            }
-
-            if (is_object($current[$key])) {
-                $current = (array) $current[$key];
-            } else {
-                $current = $current[$key];
-            }
-        }
-
-        return $current;
-
-    }
-
-    public function offsetUnset($offset)
-    {
-        $this->set($offset);
-    }
-
-    public function offsetGet($offset)
-    {
-        return $this->get($offset);
     }
 
     /**
@@ -308,15 +282,37 @@ class WordPressOption implements ArrayAccess
         $mergeOptions = $this->__delta($options, $this->_value);
 
         $values = [
-            'option_value' => json_encode($mergeOptions),
+      'option_value' => json_encode($mergeOptions)
         ];
 
         $result = $wpdb->update($this->tableName, $values, ['option_name' => $this->plugin->slug]);
 
-        $this->_value = (array) json_decode($values['option_value'], true);
+        $this->_value = (array)json_decode($values['option_value'], true);
 
         return $result;
+    }
 
+    /**
+     * Load the default value from `config/options.php` and replace the current.
+     *
+     * @return false|int
+     */
+    public function reset()
+    {
+        global $wpdb;
+
+        $options = include $this->plugin->getBasePath() . '/config/options.php';
+
+        $values = [
+      'option_name' => $this->plugin->slug,
+      'option_value' => json_encode($options)
+        ];
+
+        $result = $wpdb->update($this->tableName, $values, ['option_name' => $this->plugin->slug]);
+
+        $this->_value = (array)json_decode($values['option_value'], true);
+
+        return $result;
     }
 
     /**
@@ -342,7 +338,7 @@ class WordPressOption implements ArrayAccess
             }
         }
 
-        // serach for delete
+        // search for delete
         foreach ($result as $key => $value) {
             if (!is_numeric($key) && !isset($lastVersion[$key])) {
                 unset($result[$key]);
