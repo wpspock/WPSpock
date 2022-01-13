@@ -1,11 +1,11 @@
-// settings
-@import "settings";
 // useful functions and mixin
-@import "functions";
+@import (reference) "functions";
 // reset theme
 @import "reset";
 @import "accessibility";
 @import "alignments";
-// customer theme
-@import "../../../../../../../resources/assets/less/style";
 
+// customer theme
+@import "../../../../../../../resources/assets/less-theme/config/index";
+@import "spock/index";
+@import "../../../../../../../resources/assets/less-theme/style";
