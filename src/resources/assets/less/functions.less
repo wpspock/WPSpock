@@ -5,93 +5,93 @@
 
 // ClearFix helper
 .clearfix() {
-  *zoom: 1 !important;
+	*zoom: 1 !important;
 
-  &:before,
-  &:after {
-    display: table !important;
-    line-height: 0 !important;
-    content: "" !important;
-  }
+	&:before,
+	&:after {
+		display: table !important;
+		line-height: 0 !important;
+		content: "" !important;
+	}
 
-  &:after {
-    clear: both !important;
-  }
-}
-
-// Opacity
-.opacity (@opacity: 0.5) {
-  -webkit-opacity: @opacity;
-  -moz-opacity: @opacity;
-  opacity: @opacity;
+	&:after {
+		clear: both !important;
+	}
 }
 
 // Border radius
 .border-radius (@radius: 5px) {
-  -webkit-border-radius: @radius;
-  -moz-border-radius: @radius;
-  border-radius: @radius;
+	-webkit-border-radius: @radius;
+	-moz-border-radius: @radius;
+	border-radius: @radius;
+}
+
+// Opacity
+.opacity (@opacity: 0.5) {
+	-webkit-opacity: @opacity;
+	-moz-opacity: @opacity;
+	opacity: @opacity;
 }
 
 // Box shadow
 .box-shadow( @shadow ) {
-  -webkit-box-shadow: @shadow;
-  -moz-box-shadow: @shadow;
-  box-shadow: @shadow;
+	-webkit-box-shadow: @shadow;
+	-moz-box-shadow: @shadow;
+	box-shadow: @shadow;
 }
 
 // Box sizing
 .box-sizing (@type: border-box) {
-  -webkit-box-sizing: @type;
-  -moz-box-sizing: @type;
-  box-sizing: @type;
+	-webkit-box-sizing: @type;
+	-moz-box-sizing: @type;
+	box-sizing: @type;
 }
 
 // Transitions
 .transition( @transition ) {
-  -webkit-transition: @transition;
-  -moz-transition: @transition;
-  -ms-transition: @transition;
-  -o-transition: @transition;
-  transition: @transition;
+	-webkit-transition: @transition;
+	-moz-transition: @transition;
+	-ms-transition: @transition;
+	-o-transition: @transition;
+	transition: @transition;
 }
 
 // transform
 .transform ( @transform) {
-  -webkit-transform: @transform;
-  -moz-transform: @transform;
-  -ms-transform: @transform;
-  -o-transform: @transform;
-  transform: @transform;
+	-webkit-transform: @transform;
+	-moz-transform: @transform;
+	-ms-transform: @transform;
+	-o-transform: @transform;
+	transform: @transform;
 }
 
 // utilities for...loop
 .for(@list, @code) {
-  & {
-    .loop(@i:1) when (@i =< length(@list)) {
-      @value: extract(@list, @i);
+	& {
+		.loop(@i:1) when (@i =< length(@list)) {
+			@value: extract(@list, @i);
 
-      @code();
+			@code();
 
-      .loop(@i + 1);
-    }
+			.loop(@i + 1);
+		}
 
-    .loop();
-  }
+		.loop();
+	}
 }
 
 .forKey(@list, @code) {
-  & {
-    .loop(@i:1) when (@i =< length(@list)) {
-      @pairs: extract(@list, @i);
-      @key: extract(@pairs, 1);
-      @value: extract(@pairs, 2);
+	& {
+		.loop(@i:1) when (@i =< length(@list)) {
+			@pairs: extract(@list, @i);
+			@key: extract(@pairs, 1);
+			@value: extract(@pairs, 2);
 
-      @code();
+			@code();
 
-      .loop(@i + 1);
-    }
+			.loop(@i + 1);
+		}
 
-    .loop();
-  }
+		.loop();
+	}
 }
