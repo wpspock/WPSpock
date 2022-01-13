@@ -1,0 +1,25 @@
+// -----------------------------------------------------------
+// Border Radius
+//
+// The .border-raius() mixin is used to set the border radius of an element.
+// Currently, we could remove that and use the border-raius property directly.
+// It's used just for backward compatibility.
+// Anyway, It's defined in
+// /vendor/wpspock/wpspock/src/resources/assets/less/functions.less
+// -----------------------------------------------------------
+
+.borderRadius() {
+  @array: @border-radius-array;
+
+  .for(@array, {
+    [class*="@@{spock-namespace}"] {
+      &.--br-@{value} {
+        .border-radius(~"@{value}px") !important;
+      }
+    }
+  }
+
+  );
+}
+
+.borderRadius();

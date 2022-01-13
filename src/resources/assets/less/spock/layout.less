@@ -1,0 +1,97 @@
+// -----------------------------------------------------------
+// Pages
+// -----------------------------------------------------------
+.layout {
+  &\@@{spock-namespace} {
+    display: block;
+  }
+}
+
+.grid {
+  &\@@{spock-namespace} {
+    display: grid;
+  }
+}
+
+.l-page {
+  &\@@{spock-namespace} {
+    background-color: @color-white;
+    .l-page_content {
+      .responsive(margin-top, 64, 100);
+    }
+  }
+}
+
+.l-main-content {
+  &\@@{spock-namespace} {
+    display: grid;
+    margin: 0 auto;
+    gap: 16px;
+    width: @page-large;
+
+    @media only screen and (max-width: @break-1560) {
+      width: @page-medium;
+    }
+
+    @media only screen and (max-width: @break-1040) {
+      //width: @page-small;
+    }
+
+    @media only screen and (max-width: @break-800) {
+      width: @page-90vw;
+    }
+  }
+}
+
+[class*="@@{spock-namespace}"] {
+  &.--center {
+    margin: 0 auto;
+  }
+
+  &.--justify-content-center {
+    justify-content: center;
+  }
+}
+
+.layoutSizes() {
+  // see config/layout.less
+  @array: @layout-sizes-array;
+
+  .for(@array, {
+    [class*="@@{spock-namespace}"] {
+      &.--size-@{value} {
+        width: ~"@{value}" !important;
+      }
+    }
+  }
+
+  );
+}
+
+.layoutSizes();
+
+[class*="@@{spock-namespace}"] {
+  &.--size-huge {
+    width: @page-huge !important;
+  }
+
+  &.--size-large {
+    width: @page-large !important;
+  }
+
+  &.--size-medium {
+    width: @page-medium !important;
+  }
+
+  &.--size-small {
+    width: @page-small !important;
+  }
+
+  &.--size-xsmall {
+    width: @page-xsmall !important;
+  }
+
+  &.--size-tiny {
+    width: @page-tiny !important;
+  }
+}

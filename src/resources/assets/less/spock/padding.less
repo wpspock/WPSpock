@@ -1,0 +1,85 @@
+// -----------------------------------------------------------
+// Padding
+// -----------------------------------------------------------
+
+.paddings() {
+  @array: @paddings-array;
+
+  // padding t-r-b-l
+  .for(@array, {
+    [class*="@@{spock-namespace}"] {
+      &.--pt-@{value} {
+        padding-top: ~"@{value}px" !important;
+      }
+    }
+  }
+
+  );
+
+  .for(@array, {
+    [class*="@@{spock-namespace}"] {
+      &.--pr-@{value} {
+        padding-right: ~"@{value}px" !important;
+      }
+    }
+  }
+
+  );
+
+  .for(@array, {
+    [class*="@@{spock-namespace}"] {
+      &.--pb-@{value} {
+        padding-bottom: ~"@{value}px" !important;
+      }
+    }
+  }
+
+  );
+
+  .for(@array, {
+    [class*="@@{spock-namespace}"] {
+      &.--pl-@{value} {
+        padding-left: ~"@{value}px" !important;
+      }
+    }
+  }
+
+  );
+
+  // padding all
+  .for(@array, {
+    [class*="@@{spock-namespace}"] {
+      &.--p-@{value} {
+        padding: ~"@{value}px" !important;
+      }
+    }
+  }
+
+  );
+
+  // padding left right
+  .for(@array, {
+    [class*="@@{spock-namespace}"] {
+      &.--plr-@{value} {
+        padding-right: ~"@{value}px" !important;
+        padding-left: ~"@{value}px" !important;
+      }
+    }
+  }
+
+  );
+
+  // padding top bottom
+  .for(@array, {
+      [class*="@@{spock-namespace}"] {
+        &.--ptb-@{value} {
+          padding-top: ~"@{value}px" !important;
+          padding-bottom: ~"@{value}px" !important;
+        }
+      }
+    }
+
+    );
+}
+
+.paddings();

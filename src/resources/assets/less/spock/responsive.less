@@ -1,0 +1,84 @@
+/*
+|--------------------------------------------------------------------------
+| Responsive useful helper
+|--------------------------------------------------------------------------
+|
+| Here you'll find some responsive helper for with, padding, and so on.
+| You can use them when you need to make responsive a pixel dimensions with
+| our view port. Remember that the view port is 1440px.
+|
+*/
+
+.responsive(@rule,@max,@min,@max_width:1440,@min_width:320) {
+  @{rule}: ~"@{max}px";
+  @media only screen and (max-width: ~"@{max_width}px") {
+    @{rule}: calc(
+      ~"@{min}px + (@{max} - @{min}) * ( (100vw - @{min_width}px) / (@{max_width} - @{min_width}) )"
+    );
+  }
+}
+
+// font-size: calc([minimum size] + ([maximum size] - [minimum size]) * ((100vw - [minimum viewport width]) / ([maximum viewport width] - [minimum viewport width])));
+.responsive-font-size(@max,@min,@max_width:1440,@min_width:320 ) {
+  .responsive(font-size, @max, @min, @max_width, @min_width);
+}
+
+.responsive-line-height(@max,@min,@max_width:1440,@min_width:320 ) {
+  .responsive(line-height, @max, @min, @max_width, @min_width);
+}
+
+.responsive-width(@max,@min,@max_width:1440,@min_width:320 ) {
+  .responsive(width, @max, @min, @max_width, @min_width);
+}
+
+.responsive-height(@max,@min,@max_width:1440,@min_width:320 ) {
+  .responsive(height, @max, @min, @max_width, @min_width);
+}
+
+.responsive-margin(@max,@min,@max_width:1440,@min_width:320 ) {
+  .responsive(margin, @max, @min, @max_width, @min_width);
+}
+
+.responsive-margin-top(@max,@min,@max_width:1440,@min_width:320 ) {
+  .responsive(margin-top, @max, @min, @max_width, @min_width);
+}
+
+.responsive-margin-bottom(@max,@min,@max_width:1440,@min_width:320 ) {
+  .responsive(margin-bottom, @max, @min, @max_width, @min_width);
+}
+
+.responsive-margin-right(@max,@min,@max_width:1440,@min_width:320 ) {
+  .responsive(margin-right, @max, @min, @max_width, @min_width);
+}
+
+.responsive-margin-left(@max,@min,@max_width:1440,@min_width:320 ) {
+  .responsive(margin-left, @max, @min, @max_width, @min_width);
+}
+
+.responsive-padding(@max,@min,@max_width:1440,@min_width:320 ) {
+  .responsive(padding, @max, @min, @max_width, @min_width);
+}
+
+.responsive-padding-top(@max,@min,@max_width:1440,@min_width:320 ) {
+  .responsive(padding-top, @max, @min, @max_width, @min_width);
+}
+
+.responsive-padding-right(@max,@min,@max_width:1440,@min_width:320 ) {
+  .responsive(padding-right, @max, @min, @max_width, @min_width);
+}
+
+.responsive-padding-left(@max,@min,@max_width:1440,@min_width:320 ) {
+  .responsive(padding-left, @max, @min, @max_width, @min_width);
+}
+
+.responsive-padding-bottom(@max,@min,@max_width:1440,@min_width:320 ) {
+  .responsive(padding-bottom, @max, @min, @max_width, @min_width);
+}
+
+.responsive-grid-column-gap(@max,@min,@max_width:1440,@min_width:320 ) {
+  .responsive(grid-column-gap, @max, @min, @max_width, @min_width);
+}
+
+.responsive-grid-row-gap(@max,@min,@max_width:1440,@min_width:320 ) {
+  .responsive(grid-row-gap, @max, @min, @max_width, @min_width);
+}

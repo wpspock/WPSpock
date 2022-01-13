@@ -1,0 +1,327 @@
+/**
+ * Here you'll find all typographical styles
+ *
+ * @author          =undo= <john.fazioli@namecheap.com>
+ * @copyright       Copyright (C) 2015-2018 Namecheap, Inc. All Rights Reserved.
+ *
+ */
+
+::selection {
+  background: rgba(16, 143, 100, 0.08);
+  /*@brand-color only 16% opacity*/
+}
+
+::-moz-selection {
+  background: rgba(16, 143, 100, 0.08);
+  /*@brand-color only 16% opacity*/
+}
+
+// Base fonts
+
+.cds-base-font() {
+  font-family: @font-families;
+  color: @cds-color-midnight;
+  font-kerning: normal;
+  font-variant-ligatures: common-ligatures contextual;
+  -moz-font-feature-settings: "kern", "liga", "clig", "calt";
+  -ms-font-feature-settings: "kern", "liga", "clig", "calt";
+  -webkit-font-feature-settings: "kern", "liga", "clig", "calt";
+  font-feature-settings: "kern", "liga", "clig", "calt";
+}
+
+// Base paragraph
+
+.cds-paragraph() {
+  .cds-base-font();
+  font-weight: 400;
+  font-size: 18px;
+  color: @cds-color-slate-blue;
+  line-height: 1.4;
+  clear: both;
+}
+
+// Base heading
+
+.cds-heading() {
+  .cds-base-font();
+  font-weight: bold;
+  margin: 0;
+}
+
+// Set the body
+
+body {
+  .cds-paragraph();
+  letter-spacing: 0.005em;
+}
+
+// --------------------------------------------------------------------------
+// Default Styles for other HTML tags
+// --------------------------------------------------------------------------
+strong,
+b,
+blockquote,
+dt {
+  font-weight: bold;
+}
+
+cite,
+em,
+i {
+  // font-weight: 400; Inherit the body font family
+  font-style: italic;
+}
+
+pre,
+code {
+  font-family: "Fira Code", "Courier New", Monaco, monospace !important;
+  font-size: 0.8rem;
+}
+
+// --------------------------------------------------------------------------
+// Images
+// --------------------------------------------------------------------------
+
+img {
+  &.cds-circle {
+    .border-radius(100%);
+  }
+}
+
+// --------------------------------------------------------------------------
+// Anchors
+// --------------------------------------------------------------------------
+
+a,
+a:link {
+  font-weight: 600;
+  text-decoration: none;
+  color: @cds-color-green;
+
+  &.cds-anchor {
+    text-decoration: underline;
+  }
+}
+
+a,
+a:link,
+a:active,
+a:visited {
+  &.cds-disabled,
+  &[disabled] {
+    color: @cds-color-bright-grey !important;
+    cursor: default !important;
+    text-decoration: none;
+  }
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+// --------------------------------------------------------------------------
+// Paragraphs
+// --------------------------------------------------------------------------
+
+p {
+  .cds-paragraph();
+}
+
+a.cds-footnote,
+.cds-footnote {
+  font-weight: 400;
+  line-height: 1.2;
+  color: @cds-color-footnote;
+  font-size: 14px;
+
+  &.cds-size-small {
+    font-size: 12px;
+  }
+
+  &.cds-size-medium {
+    font-size: 14px;
+  }
+
+  &.cds-size-big {
+    font-size: 16px;
+  }
+}
+.cds-label {
+  font-weight: 700;
+  font-size: 14px;
+  color: @cds-color-stack-grey;
+  letter-spacing: 0.4px;
+  line-height: 1.1;
+  text-transform: uppercase;
+
+  &.cds-size-small {
+    font-size: 12px;
+  }
+
+  &.cds-size-medium {
+    font-size: 14px;
+  }
+
+  &.cds-size-big {
+    font-size: 16px;
+  }
+}
+
+// --------------------------------------------------------------------------
+// Helper
+// --------------------------------------------------------------------------
+
+.cds-text-uppercase {
+  text-transform: uppercase;
+}
+
+.cds-text-lowercase {
+  text-transform: lowercase;
+}
+
+.cds-text-capitalize {
+  text-transform: capitalize;
+}
+
+.cds-nowrap {
+  white-space: nowrap;
+}
+
+.fontsizes() {
+  @array: @font-sizes-array;
+
+  // font-size
+  .for(@array, {
+    .cds-fs-@{value} {
+      font-size: ~"@{value}px" !important;
+    }
+  }
+
+  );
+}
+
+//.fontsizes();
+
+.lineheight() {
+  @array: @line-height-array;
+
+  // font-size
+  .for(@array, {
+    .cds-lh-@{value} {
+      line-height: ~"@{value}px" !important;
+    }
+  }
+
+  );
+}
+
+//.lineheight();
+
+// --------------------------------------------------------------------------
+// Heading titles
+// --------------------------------------------------------------------------
+
+h1 {
+  .cds-heading();
+  font-size: 64px;
+  line-height: 1.1;
+}
+
+h2 {
+  .cds-heading();
+  font-size: 48px;
+  line-height: 1.15;
+}
+
+h3 {
+  .cds-heading();
+  font-size: 36px;
+  line-height: 1.2;
+}
+
+h4 {
+  .cds-heading();
+  font-size: 28px;
+  line-height: 1.25;
+}
+
+h5 {
+  .cds-heading();
+  font-size: 24px;
+  line-height: 1.3;
+}
+
+h6 {
+  .cds-heading();
+  font-size: 18px;
+  line-height: 1.4;
+}
+
+// --------------------------------------------------------------------------
+// Titles
+// --------------------------------------------------------------------------
+
+.cds-titles {
+  font-family: "InteloAltExtraBold", -apple-system, BlinkMacSystemFont,
+    "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans",
+    "Droid Sans", "Helvetica Neue", sans-serif;
+  letter-spacing: -0.1px;
+  line-height: 1;
+}
+
+h1 {
+  &.cds-titles {
+    .cds-titles();
+    font-size: 120px;
+  }
+}
+
+h2 {
+  &.cds-titles {
+    .cds-titles();
+    font-size: 96px;
+  }
+}
+
+h3 {
+  &.cds-titles {
+    .cds-titles();
+    font-size: 72px;
+  }
+}
+
+h4 {
+  &.cds-titles {
+    .cds-titles();
+    font-size: 64px;
+  }
+}
+
+h5 {
+  &.cds-titles {
+    .cds-titles();
+    font-size: 48px;
+  }
+}
+
+blockquote,
+blockquote.wp-block-quote {
+  border: none;
+  margin: 70px 0 40px;
+  padding: 0;
+  position: relative;
+
+  &:before {
+    content: "\275D";
+    position: absolute;
+    top: -64px;
+    font-size: 72px;
+    left: -8px;
+    color: @cds-color-brand;
+  }
+
+  * {
+    font-size: 28px;
+    font-weight: 600;
+  }
+}
