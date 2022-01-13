@@ -249,11 +249,11 @@ class Theme
 
                 add_action('wp_head', function () use ($editor) {
                     ?>
-                  <style type="text/css">
-                  <?php foreach ($editor['editor-font-sizes'] as $font) : ?>
+<style type="text/css">
+    <?php foreach ($editor['editor-font-sizes'] as $font) : ?>
     <?php echo '.has-' . $font['slug'] . '-font-size { font-size: ' . $font['size'] . 'px; }'; ?>
-                  <?php endforeach; ?>
-                  </style><?php
+    <?php endforeach; ?>
+</style><?php
                 });
             }
 
@@ -262,14 +262,14 @@ class Theme
 
                 add_action('wp_head', function () use ($editor) {
                     ?>
-                  <style type="text/css">
-                  <?php foreach ($editor['editor-color-palette'] as $color) : ?>
+<style type="text/css">
+    <?php foreach ($editor['editor-color-palette'] as $color) : ?>
     <?php echo '.has-text-color.has-' . $color['slug'] . '-color { color: ' . $color['color'] . '; }'; ?>
 
     <?php echo '.has-background.has-' . $color['slug'] . '-background-color { background-color: ' . $color['color'] . '; }'; ?>
 
-                  <?php endforeach; ?>
-                  </style><?php
+    <?php endforeach; ?>
+</style><?php
                 });
             }
 
@@ -328,7 +328,7 @@ class Theme
 
             if (!empty($scripts)) {
                 foreach ($scripts as $key => $script) {
-                    wp_enqueue_script($key, get_template_directory_uri() . "/public/js/{$script}", [], $version, true);
+                    wp_enqueue_script($key, get_template_directory_uri() . "/public/js/{$script}", ['jquery'], $version, true);
                 }
             }
 
@@ -461,8 +461,12 @@ class Theme
      */
     public function cls($classes = [], $props = [])
     {
-        $merged = array_merge($classes, $props['class'] ?? []);
+        $merged = array_map(function ($k, $v) {
+            return $v !== false ? "with-props-{$k} with-props-{$k}-value-{$v}" : null;
+        }, array_keys($props), array_values($props));
+        $merged = array_merge($classes, $merged, $props['class'] ?? []);
         $merged = array_filter($merged);
+
 
         return trim(join(' ', $merged));
     }
