@@ -66,6 +66,24 @@ if (!function_exists('component')) {
     }
 }
 
+if (!function_exists('html')) {
+    /**
+     * Return the HTML markauo of a component.
+     *
+     * @param function $component
+     */
+    function html($component): string
+    {
+        ob_start();
+
+        $component();
+
+        $html = str_replace(["\r","\n"], '', trim(ob_get_clean()));
+
+        return $html;
+    }
+}
+
 if (!function_exists('view')) {
     /**
      * Load a component form /theme/Components/ folder.
