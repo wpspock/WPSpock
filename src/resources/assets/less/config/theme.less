@@ -1,0 +1,95 @@
+/**
+ * The namespace is used to build the css selector.
+ * You may change it to any string you want.
+ */
+@spock-namespace: spock;
+
+/**
+ * Here you may set your own paths.
+ */
+@theme-path: "/wp-content/themes/easywp-coral-theme/";
+@component-path: "/wp-content/themes/easywp-coral-theme/";
+@images-path: "/wp-content/themes/easywp-coral-theme/resources/assets/images";
+@icons-path: "/wp-content/themes/easywp-coral-theme/resources/assets/images/icons";
+
+/**
+ * Border Radius array.
+ * We'll use this array to build the border-radius classes.
+ *
+ * @example
+ * [class*="@spock"].--br-2 {
+ *   border-radius: 2px !important;
+ *  }
+ *
+ * Then you may use class="layout@spock --br-2" to set the border-radius.
+ */
+
+@border-radius-array: 2, 3, 4, 8, 16, 32;
+
+// We're going to create the following margin classes:
+@margins-array: 0, 4, 8, 16, 32, 64;
+
+// We're going to create the following padding classes:
+@paddings-array: 0, 4, 8, 16, 32, 64;
+
+// -----------------------------------------------------------
+// Page sizes
+// -----------------------------------------------------------
+
+@page-auto: auto;
+@page-full: 100%;
+@page-100vw: 100vw;
+@page-90vw: 90vw;
+@page-80vw: 80vw;
+@page-2048: 2048px;
+@page-1440: 1440px;
+@page-1280: 1280px;
+@page-1024: 1024px;
+@page-980: 980px;
+@page-960: 960px;
+@page-768: 768px;
+@page-720: 720px;
+@page-600: 600px;
+@page-480: 480px;
+@page-320: 320px;
+@page-240: 240px;
+
+@page-huge: @page-2048;
+@page-large: @page-1440;
+@page-medium: @page-980;
+@page-small: @page-720;
+@page-xsmall: @page-480;
+@page-tiny: @page-320;
+
+@layout-sizes-array: @page-huge, @page-large, @page-medium, @page-small,
+  @page-xsmall, @page-tiny;
+
+// -----------------------------------------------------------
+// Media breaks
+// -----------------------------------------------------------
+
+@break-320: 320px;
+@break-375: 375px;
+@break-414: 414px;
+@break-736: 736px;
+@break-768: 768px;
+@break-800: 800px;
+@break-920: 920px;
+@break-1024: 1024px;
+@break-1040: 1040px;
+@break-1280: 1280px;
+@break-1440: 1440px;
+@break-1560: 1560px;
+@break-2048: 2048px;
+
+// Useful alias
+@break-iphoneSE: @break-320;
+@break-iphone: @break-375;
+@break-iphone8: @break-375;
+@break-iphone-plus: @break-414;
+@break-iphone-plus-landscape: @break-736;
+@break-ipad: @break-768;
+@break-ipad-landscape: @break-1024;
+
+// The theme prfix will be used to prefix all the classes
+@theme-prefix: cds;

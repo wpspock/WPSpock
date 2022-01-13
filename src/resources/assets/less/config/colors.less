@@ -1,0 +1,201 @@
+// -----------------------------------------------------------
+// Colors Palette
+// -----------------------------------------------------------
+
+@color-green: #108f64;
+@color-midnight: #2b3a47;
+@color-slate-blue: #52606d;
+@color-stack-grey: #8f8f8f;
+@color-bright-grey: #b8b8b8;
+@color-smoke-white: #f5f5f5;
+@color-lighter: #fafafa;
+@color-white: #fff;
+@color-caribbean-green: #0ac993;
+@color-orange: #e4693f;
+@color-pastel-red: #bf4124;
+@color-black: #000;
+@color-yellow: #ebaa42;
+@color-light-yellow: #fff7e8;
+@color-blue: #4586bf;
+@color-light-blue: #e5fbfc;
+@color-light-red: #f9e4e4;
+@color-light-green: #dff7ee;
+
+// colors role id
+@color-brand: @color-green;
+@color-heading: @color-midnight;
+@color-body-text: @color-slate-blue;
+@color-footnote: @color-stack-grey;
+@color-icon: @color-bright-grey;
+@color-light-background: @color-smoke-white;
+@color-lighter-background: @color-lighter;
+@color-input-background: @color-smoke-white;
+@color-success: @color-caribbean-green;
+@color-alert: @color-orange;
+@color-danger: @color-pastel-red;
+@color-warning: @color-yellow;
+@color-bg-warning: @color-light-yellow;
+@color-info: @color-blue;
+@color-bg-info: @color-light-blue;
+@color-bg-error: @color-light-red;
+@color-bg-success: @color-light-green;
+
+/* PREVIOUS */
+
+/**
+* Here you'll find the foreground and background color defines.
+*
+* This Less script will create two classes for each color in the array.
+* For example, first of all you can define a variable:
+*
+*  @cds-color-green : #09b584;
+*
+* if you want also the css classes, then you have to add the color in the array:
+*
+*  @colors :
+*   ...
+*  green,
+*  ...
+* ;
+*
+* Then you'll get in css:
+*
+*  .cds-color-green {
+*    color: #09b584;
+*  }
+*
+*  .cds-background-color-green {
+*    background-color: #09b584;
+*  }
+*
+* Anyway, you will able to use in your LESS code:
+*
+*  .my-class {
+*    color: @cds-color-green;
+*  }
+*
+*/
+
+// colors variables defines
+@cds-color-green: #108f64;
+@cds-color-midnight: #2b3a47;
+@cds-color-slate-blue: #52606d;
+@cds-color-stack-grey: #8f8f8f;
+@cds-color-bright-grey: #b8b8b8;
+@cds-color-smoke-white: #f5f5f5;
+@cds-color-lighter: #fafafa;
+@cds-color-white: #fff;
+@cds-color-caribbean-green: #0ac993;
+@cds-color-orange: #e4693f;
+@cds-color-pastel-red: #bf4124;
+@cds-color-black: #000;
+@cds-color-yellow: #ebaa42;
+@cds-color-light-yellow: #fff7e8;
+@cds-color-blue: #4586bf;
+@cds-color-light-blue: #e5fbfc;
+@cds-color-light-red: #f9e4e4;
+@cds-color-light-green: #dff7ee;
+
+// colors role id
+@cds-color-brand: @cds-color-green;
+@cds-color-heading: @cds-color-midnight;
+@cds-color-body-text: @cds-color-slate-blue;
+@cds-color-footnote: @cds-color-stack-grey;
+@cds-color-icon: @cds-color-bright-grey;
+@cds-color-light-background: @cds-color-smoke-white;
+@cds-color-lighter-background: @cds-color-lighter;
+@cds-color-input-background: @cds-color-smoke-white;
+@cds-color-success: @cds-color-caribbean-green;
+@cds-color-alert: @cds-color-orange;
+@cds-color-danger: @cds-color-pastel-red;
+@cds-color-warning: @cds-color-yellow;
+@cds-color-bg-warning: @cds-color-light-yellow;
+@cds-color-info: @cds-color-blue;
+@cds-color-bg-info: @cds-color-light-blue;
+@cds-color-bg-error: @cds-color-light-red;
+@cds-color-bg-success: @cds-color-light-green;
+
+.colors() {
+  // establish colors
+  @colors: green, midnight, slate-blue, stack-grey, bright-grey, smoke-white,
+    lighter, white, caribbean-green, orange, pastel-red, black, yellow,
+    light-yellow, blue, light-blue, light-red, light-green, brand, heading,
+    body-text, footnote, icon, light-background, lighter-background,
+    input-background, success, alert, danger, warning, bg-warning, info, bg-info,
+    bg-error, bg-success;
+
+  // foreground colors
+  .for(@colors, {
+    .cds-color-@{value} {
+      @variable: ~"cds-color-@{value}";
+      color: @@variable  !important;
+    }
+  }
+
+  );
+
+  // background colors
+  // .for(@colors, { .cds-background-color-@{value} {
+  //   @variable: ~"cds-color-@{value}";
+  //   background-color: @@variable !important;
+  // } });
+
+  // // border colors
+  // .for(@colors, { .cds-border-color-@{value} {
+  //   @variable: ~"cds-color-@{value}";
+  //   border-color: @@variable !important;
+  // } });
+
+  // // stroke colors
+  // .for(@colors, { .cds-stroke-color-@{value} {
+  //   @variable: ~"cds-color-@{value}";
+  //   stroke: @@variable !important;
+  // } });
+
+  // application
+  //.each(@colors);
+
+  // for loop to iterate over array
+  .each(@array, @i: 1) when (@i <=length(@array)) {
+    // extract colors
+    @pair: extract(@array, @i);
+    @color: extract(@pair, 1);
+    @variable: ~"cds-color-@{color}";
+
+    // darken
+    @arrayDarken: 1, 5, 10, 20, 30, 40, 50;
+    //.darkner(@arrayDarken);
+
+    .darkner(@arrayDarken, @d: 1) when (@d <=length(@arrayDarken)) {
+      @e: extract(@arrayDarken, @d);
+      @v: extract(@e, 1);
+      @newColor: darken(@@variable, @v);
+
+      .cds-border-color-@{color}--@{v} {
+        border-color: @newColor !important;
+      }
+
+      .darkner(@arrayDarken, @d + 1);
+    }
+
+    // lighten
+    @arrayLighten: 1, 5, 10, 20, 30, 40, 50, 60, 70, 80;
+    //.lightener(@arrayLighten);
+
+    .lightener(@arrayLighten, @d: 1) when (@d <=length(@arrayLighten)) {
+      @e: extract(@arrayLighten, @d);
+      @v: extract(@e, 1);
+      @newColor: lighten(@@variable, @v);
+
+      .cds-border-color-@{color}-@{v} {
+        border-color: @newColor !important;
+      }
+
+      .lightener(@arrayLighten, @d + 1);
+    }
+
+    //.each(@array, @i + 1);
+  }
+}
+
+.colors();
