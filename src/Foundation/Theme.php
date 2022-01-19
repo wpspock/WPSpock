@@ -17,6 +17,7 @@ use WPScotty\WPSpock\Database\WordPressOption;
 use WPScotty\WPSpock\Footer\Footer;
 use WPScotty\WPSpock\Header\Header;
 use WPScotty\WPSpock\Post\Post;
+use WPScotty\WPSpock\Support\Minifier;
 use WPScotty\WPSpock\Support\MinifyHTML;
 use WPScotty\WPSpock\Support\Str;
 
@@ -247,7 +248,7 @@ class Theme
             if (!empty($editor['editor-font-sizes'])) {
                 add_theme_support('editor-font-sizes', $editor['editor-font-sizes']);
 
-                add_action('wp_head', function () use ($editor) {
+                $this->admin_style(function () use ($editor) {
                     ?>
 <style type="text/css">
     <?php foreach ($editor['editor-font-sizes'] as $font) : ?>
@@ -260,7 +261,7 @@ class Theme
             if (!empty($editor['editor-color-palette'])) {
                 add_theme_support('editor-color-palette', $editor['editor-color-palette']);
 
-                add_action('wp_head', function () use ($editor) {
+                $this->admin_style(function () use ($editor) {
                     ?>
 <style type="text/css">
     <?php foreach ($editor['editor-color-palette'] as $color) : ?>
@@ -368,6 +369,11 @@ class Theme
         return '/vendor/wpspock/wpspock/src/';
     }
 
+    public function version(): string
+    {
+        return 'x.y.z';
+    }
+
     /**
      * Return the Options theme instance used to get/set/delete options theme.
      * You'll be able to use spock()->options->get('myoption')
@@ -462,7 +468,9 @@ class Theme
     public function cls($classes = [], $props = [])
     {
         $merged = array_map(function ($k, $v) {
-            return $v !== false ? "with-props-{$k} with-props-{$k}-value-{$v}" : null;
+            $value = is_array($v) ? implode('-', $v) : $v;
+            $with_props = !is_object($value) ? "with-props-{$k}-value-{$value}" : "";
+            return $v !== false ? "with-props-{$k} {$with_props}" : null;
         }, array_keys($props), array_values($props));
         $merged = array_merge($classes, $merged, $props['class'] ?? []);
         $merged = array_filter($merged);
@@ -470,6 +478,180 @@ class Theme
 
         return trim(join(' ', $merged));
     }
+
+    protected function minify_css(string $str): string
+    {
+        # remove comments first (simplifies the other regex)
+        $re1 = <<<'EOS'
+    (?sx)
+    # quotes
+    (
+      "(?:[^"\\]++|\\.)*+"
+    | '(?:[^'\\]++|\\.)*+'
+    )
+    |
+    # comments
+    /\* (?> .*? \*/ )
+    EOS;
+
+        $re2 = <<<'EOS'
+    (?six)
+    # quotes
+    (
+      "(?:[^"\\]++|\\.)*+"
+    | '(?:[^'\\]++|\\.)*+'
+    )
+    |
+    # ; before } (and the spaces after it while we're here)
+    \s*+ ; \s*+ ( } ) \s*+
+    |
+    # all spaces around meta chars/operators
+    \s*+ ( [*$~^|]?+= | [{};,>~+-] | !important\b ) \s*+
+    |
+    # spaces right of ( [ :
+    ( [[(:] ) \s++
+    |
+    # spaces left of ) ]
+    \s++ ( [])] )
+    |
+    # spaces left (and right) of :
+    \s++ ( : ) \s*+
+    # but not in selectors: not followed by a {
+    (?!
+      (?>
+        [^{}"']++
+      | "(?:[^"\\]++|\\.)*+"
+      | '(?:[^'\\]++|\\.)*+'
+      )*+
+      {
+    )
+    |
+    # spaces at beginning/end of string
+    ^ \s++ | \s++ \z
+    |
+    # double spaces to single
+    (\s)\s+
+    EOS;
+
+        $str = preg_replace("%$re1%", '$1', $str);
+        return preg_replace("%$re2%", '$1$2$3$4$5$6$7', $str);
+    }
+
+    /**
+     * Return a minified version of a inline css.
+     *
+     * @param string $css The css to minify.
+     * @param bool $style_tag Optional. If true, return the css wrapped in a style tag.
+     * @return string
+     */
+    public function css(string $str, $style_tag = false): string
+    {
+        $str = $this->minify_css($str);
+
+        return $style_tag ? "<style type=\"text/css\">{$str}</style>" : $str;
+    }
+
+    /**
+     * Return a minified version of a inline css.
+     * This is the "ob" buffered version of css method.
+     *
+     * @param callable $callable The callable to be minified.
+     * @param bool $script_tag Optional. If true, return the css wrapped in a style tag.
+     * @return string
+     */
+    public function ob_css(callable $callable, $style_tag = false)
+    {
+        ob_start(function ($html) use ($style_tag) {
+            return $this->css($html, $style_tag);
+        });
+        $callable();
+        ob_end_flush();
+    }
+
+    /**
+     * Add an inline style to the admin head.
+     *
+     * @param callable $callable The callable to be minified.
+     * @param bool $script_tag Optional. If true, return the css wrapped in a style tag.
+     *
+     * @uses add_action('admin_head');
+     */
+    public function admin_style(callable $callable, $style_tag = false)
+    {
+        add_action('admin_head', function () use ($callable, $style_tag) {
+            $this->ob_css($callable, $style_tag);
+        });
+    }
+
+    /**
+     * Returns a minified version of a inline js.
+     *
+     * @param string $js The js to minify.
+     * @param array $options Optional. Array of options.
+     */
+    public function js(string $js, $options = []): string
+    {
+        return Minifier::minify($js, $options);
+    }
+
+    /**
+     * Return a minified version of a inline js.
+     * This is the "ob" buffered version of js method.
+     *
+     * @param string $js The js to minify.
+     * @param array $options Optional. Array of options.
+     */
+    public function ob_js(callable $callable, $options = [])
+    {
+        ob_start();
+        $callable();
+        $js = ob_get_clean();
+        echo $this->js($js, $options);
+    }
+
+    /**
+     * Returns a minifier version of a inline html.
+     *
+     * @param string $html The html to minify.
+     *
+     * @return string
+     */
+    public function html(string $html): string
+    {
+        $search = [
+            '/\>[^\S ]+/s',
+            '/[^\S ]+\</s',
+            '/(\s)+/s',
+            '/<!--(.|\s)*?-->/'
+        ];
+
+        $replace = [
+            '>',
+            '<',
+            '\\1',
+            ''
+        ];
+
+        $buffer = preg_replace($search, $replace, $html);
+
+        return $buffer;
+    }
+
+    /**
+     * Return a minified version of a inline html.
+     * This is the "ob" buffered version of html method.
+     *
+     * @param callable $callable The callable to be minified.
+     */
+    public function ob_html(callable $callable)
+    {
+        ob_start(function ($html) {
+            return $this->html($html);
+        });
+        $callable();
+        ob_end_flush();
+    }
+
 
     /**
      * Return an instance of a registered provider in the `config/theme.php`.
