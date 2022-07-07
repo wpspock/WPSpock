@@ -2,6 +2,7 @@
 
 /**
  * Say Hello,
+ *
  *  __    __  ___   __                  _
  * / / /\ \ \/ _ \ / _\_ __   ___   ___| | __
  * \ \/  \/ / /_)/ \ \| '_ \ / _ \ / __| |/ /
@@ -20,6 +21,7 @@ use WPScotty\WPSpock\Post\Post;
 use WPScotty\WPSpock\Support\Minifier;
 use WPScotty\WPSpock\Support\MinifyHTML;
 use WPScotty\WPSpock\Support\Str;
+use WPScotty\WPSpock\Support\Traits\HasAttributes;
 
 if (!defined('ABSPATH')) {
     exit;
@@ -27,6 +29,8 @@ if (!defined('ABSPATH')) {
 
 class Theme
 {
+
+    use HasAttributes;
 
     /**
      * The get_template_directory(). You can use this path to "include" your files.
@@ -77,32 +81,87 @@ class Theme
      */
     private $options_ = null;
 
+    /**
+     * Main theme configuration.
+     */
+    private $config = null;
+
     public function __construct()
     {
         $this->themePath = get_template_directory();
         $this->themeUri  = get_template_directory_uri();
         $this->theme     = wp_get_theme();
 
+        $this->config = require get_template_directory() . '/config/theme.php';
+
         $this->boot();
     }
 
+
+
     protected function boot()
     {
+
+        // config service providers
+        add_action('init', function () {
+            // Custom service provider
+            if (isset($this->config['providers'])) {
+                foreach ($this->config['providers'] as $key => $className) {
+                    $GLOBALS["spock_service_provider_{$key}"] = new $className;
+                }
+            }
+        });
+
+        // config custom post types and taxonomies
+        add_action('init', function () {
+
+            // custom post types
+            if (isset($this->config['custom_post_types'])) {
+                foreach ($this->config['custom_post_types'] as  $className) {
+                    $object = new $className($this);
+                    $object->register();
+                }
+            }
+
+            // custom taxonomies
+            if (isset($this->config['custom_taxonomy_types'])) {
+                foreach ($this->config['custom_taxonomy_types'] as  $className) {
+                    $object = new $className($this);
+                    $object->register();
+                }
+            }
+        });
+
+        /**
+         * Set the content width in pixels, based on the theme's design and stylesheet.
+         *
+         * Priority 0 to make it available to lower priority callbacks.
+         *
+         * @global int $content_width
+         */
+
+        add_action('after_setup_theme', function () {
+            // This variable is intended to be overruled from themes.
+            // Open WPCS issue: {@link https://github.com/WordPress-Coding-Standards/WordPress-Coding-Standards/issues/1043}.
+            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+            $GLOBALS['content_width'] = apply_filters('spock_content_width', 640);
+        }, 0);
+
+        // main theme config
         add_action('after_setup_theme', function () {
 
-            // load the theme configuration
-            $theme = require get_template_directory() . '/config/theme.php';
 
-            if (!empty($theme)) {
+
+            if (!empty($this->config)) {
 
                 // add_editor_style
-                if (isset($theme['add_editor_style']) && $theme['add_editor_style']) {
+                if (isset($this->config['add_editor_style']) && $this->config['add_editor_style']) {
                     add_editor_style();
                 }
 
                 // add_theme_support
-                if (isset($theme['theme_support']) && is_array($theme['theme_support'])) {
-                    foreach ($theme['theme_support'] as $key => $value) {
+                if (isset($this->config['theme_support']) && is_array($this->config['theme_support'])) {
+                    foreach ($this->config['theme_support'] as $key => $value) {
                         if (is_numeric($key)) {
                             add_theme_support($value);
                         } else {
@@ -111,15 +170,10 @@ class Theme
                     }
                 }
 
-                // Custom service provider
-                if (isset($theme['providers'])) {
-                    foreach ($theme['providers'] as $key => $className) {
-                        $GLOBALS["spock_service_provider_{$key}"] = new $className;
-                    }
-                }
+
 
                 // Minify HTML
-                if (isset($theme['minify']) && $theme['minify']) {
+                if (isset($this->config['minify']) && $this->config['minify']) {
                     MinifyHTML::init();
                 }
 
@@ -129,6 +183,10 @@ class Theme
                  */
                 load_theme_textdomain('spock', get_template_directory() . '/languages');
             }
+        });
+
+        // config menu
+        add_action('after_setup_theme', function () {
 
             // load the menu configuration
             $menu = require get_template_directory() . '/config/menus.php';
@@ -137,14 +195,19 @@ class Theme
             if (!empty($menu)) {
                 register_nav_menus($menu);
             }
+        });
 
+        // config wordpress
+        add_action('after_setup_theme', function () {
             // load the wordpress configuration
             $wordpress = require get_template_directory() . '/config/wordpress.php';
 
             if (!empty($wordpress)) {
                 // admin bar
-                if (isset($wordpress['show_admin_bar'])
-                    && false === $wordpress['show_admin_bar'] && !is_admin()) {
+                if (
+                    isset($wordpress['show_admin_bar'])
+                    && false === $wordpress['show_admin_bar'] && !is_admin()
+                ) {
                     add_action('init', function () {
                         add_filter('show_admin_bar', '__return_false');
                         wp_deregister_script('admin-bar');
@@ -155,8 +218,10 @@ class Theme
                 }
 
                 // wordpress version
-                if (isset($wordpress['wp_version'])
-                    && false === $wordpress['wp_version']) {
+                if (
+                    isset($wordpress['wp_version'])
+                    && false === $wordpress['wp_version']
+                ) {
                     remove_action('wp_head', 'wp_generator');
                     add_filter('the_generator', function () {
                         return '';
@@ -175,20 +240,26 @@ class Theme
                 }
 
                 // disable autentication by email
-                if (isset($wordpress['authenticate_email_password'])
-                    && false === $wordpress['authenticate_email_password']) {
+                if (
+                    isset($wordpress['authenticate_email_password'])
+                    && false === $wordpress['authenticate_email_password']
+                ) {
                     remove_filter('authenticate', 'wp_authenticate_email_password', 20);
                 }
 
                 // remove the author
-                if (isset($wordpress['comments']['author_link'])
-                    && false === $wordpress['comments']['author_link']) {
+                if (
+                    isset($wordpress['comments']['author_link'])
+                    && false === $wordpress['comments']['author_link']
+                ) {
                     remove_filter('get_comment_author_link', '__return_false');
                 }
 
                 // remove the author link
-                if (isset($wordpress['comments']['author_link'])
-                    && false === $wordpress['comments']['author_link']) {
+                if (
+                    isset($wordpress['comments']['author_link'])
+                    && false === $wordpress['comments']['author_link']
+                ) {
                     remove_filter('get_comment_author_link', '__return_false');
                     add_filter(
                         'get_comment_author_link',
@@ -215,8 +286,10 @@ class Theme
                 }
 
                 // feed
-                if (isset($wordpress['feed'])
-                    && false === $wordpress['feed']) {
+                if (
+                    isset($wordpress['feed'])
+                    && false === $wordpress['feed']
+                ) {
                     $spock_disable_feed_hoook = function () {
                         wp_die(_t('<h1>Feed not available, please visit our <a href="' . get_bloginfo('url') . '">Home Page</a>!</h1>'));
                     };
@@ -233,7 +306,10 @@ class Theme
                     add_filter('widget_text', 'do_shortcode');
                 }
             }
+        });
 
+        // config editor
+        add_action('after_setup_theme', function () {
             // load the editor configuration
             $editor = require get_template_directory() . '/config/editor.php';
 
@@ -249,12 +325,12 @@ class Theme
                 add_theme_support('editor-font-sizes', $editor['editor-font-sizes']);
 
                 $this->admin_style(function () use ($editor) {
-                    ?>
-<style type="text/css">
-    <?php foreach ($editor['editor-font-sizes'] as $font) : ?>
-    <?php echo '.has-' . $font['slug'] . '-font-size { font-size: ' . $font['size'] . 'px; }'; ?>
-    <?php endforeach; ?>
-</style><?php
+
+                    echo '<style type="text/css">';
+                    foreach ($editor['editor-font-sizes'] as $font) {
+                        echo '.has-' . $font['slug'] . '-font-size { font-size: ' . $font['size'] . 'px; }';
+                    }
+                    echo '</style>';
                 });
             }
 
@@ -262,15 +338,12 @@ class Theme
                 add_theme_support('editor-color-palette', $editor['editor-color-palette']);
 
                 $this->admin_style(function () use ($editor) {
-                    ?>
-<style type="text/css">
-    <?php foreach ($editor['editor-color-palette'] as $color) : ?>
-    <?php echo '.has-text-color.has-' . $color['slug'] . '-color { color: ' . $color['color'] . '; }'; ?>
-
-    <?php echo '.has-background.has-' . $color['slug'] . '-background-color { background-color: ' . $color['color'] . '; }'; ?>
-
-    <?php endforeach; ?>
-</style><?php
+                    echo '<style type="text/css">';
+                    foreach ($editor['editor-color-palette'] as $color) {
+                        echo '.has-text-color.has-' . $color['slug'] . '-color { color: ' . $color['color'] . '; }';
+                        echo '.has-background.has-' . $color['slug'] . '-background-color { background-color: ' . $color['color'] . '; }';
+                    }
+                    echo '</style>';
                 });
             }
 
@@ -281,21 +354,6 @@ class Theme
                 });
             }
         });
-
-        /**
-         * Set the content width in pixels, based on the theme's design and stylesheet.
-         *
-         * Priority 0 to make it available to lower priority callbacks.
-         *
-         * @global int $content_width
-         */
-
-        add_action('after_setup_theme', function () {
-            // This variable is intended to be overruled from themes.
-            // Open WPCS issue: {@link https://github.com/WordPress-Coding-Standards/WordPress-Coding-Standards/issues/1043}.
-            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
-            $GLOBALS['content_width'] = apply_filters('spock_content_width', 640);
-        }, 0);
 
         /**
          * Register widget area.
@@ -401,9 +459,8 @@ class Theme
 
     public function __get($name)
     {
-        $method = 'get' . Str::studly($name) . 'Attribute';
-        if (method_exists($this, $method)) {
-            return $this->{$method}();
+        if ($this->hasGetMutator($name)) {
+            return $this->mutateAttribute($name);
         }
 
         if (property_exists($this->theme, $name)) {
@@ -661,7 +718,7 @@ class Theme
      */
     public function provider(string $key)
     {
-        return $GLOBALS["spock_service_provider_{$key}"]??null;
+        return $GLOBALS["spock_service_provider_{$key}"] ?? null;
     }
 
     /**

@@ -1,6 +1,6 @@
 <?php
 
-namespace WPScotty\WPSpock\Component;
+namespace WPScotty\WPSpock\Components;
 
 if (!defined('ABSPATH')) {
     exit;
